@@ -196,10 +196,10 @@ const SUPABASE_KEY = "sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3";
 }
       chatContainer.innerHTML = "";
       if (data && data.length > 0) {
-   if (msg.username === CURRENT_SENDER) return;
-renderMessage(msg.username, msg.message);
-data.forEach((msg) => renderMessage(msg.sender, msg.content);
-      }
+  data.forEach((msg) => {
+    renderMessage(msg.username, msg.message);
+  });
+}
       statusEl.textContent = "متصل";
     } catch (err) {
       console.error("خطای غیرمنتظره:", err);
