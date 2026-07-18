@@ -81,11 +81,14 @@ import { createClient } from
 
 const supabase = createClient(
 'https://fxszjitizojrluaqtjtl.supabase.co',
-‏'sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3'
+‏'const supabase = createClient(
+'https://fxszjitizojrluaqtjtl.supabase.co',
+'sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3'
+)'
 )
 
 
-async function send(){
+window.send = async function(){
 
 let text=document.getElementById("text");
 let chat=document.getElementById("chat");
