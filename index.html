@@ -189,12 +189,11 @@ const SUPABASE_KEY = "sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3";
         .select("*")
         .order("id", { ascending: true });
 
-      if (error) {
-        console.error("خطا در دریافت پیام‌ها:", error.message);
-        statusEl.textContent = "خطا در بارگذاری پیام‌ها";
-        return;
-      }
-
+    if (error) {
+  alert(JSON.stringify(error));
+  console.error(error);
+  statusEl.textContent = error.message;
+}
       chatContainer.innerHTML = "";
       if (data && data.length > 0) {
         data.forEach((msg) => renderMessage(msg.sender, msg.content));
