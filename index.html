@@ -1,117 +1,264 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AI-Life</title>
-
 <style>
-body{
-margin:0;
-font-family:tahoma;
-background:#e9f5ff;
-}
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-.header{
-background:#2196f3;
-color:white;
-padding:15px;
-text-align:center;
-font-size:22px;
-}
+  html, body {
+    height: 100%;
+    font-family: "Vazirmatn", "Tahoma", sans-serif;
+  }
 
-.chat{
-height:70vh;
-padding:15px;
-overflow:auto;
-}
+  body {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    color: #fff;
+  }
 
-.message{
-background:white;
-padding:10px;
-margin:10px;
-border-radius:12px;
-}
+  header {
+    padding: 16px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+  }
 
-.input{
-position:fixed;
-bottom:0;
-width:100%;
-display:flex;
-}
+  #chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-input{
-flex:1;
-padding:15px;
-}
+  .message {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    font-size: 15px;
+    animation: fadeIn 0.2s ease-in;
+  }
 
-button{
-width:80px;
-background:#2196f3;
-color:white;
-border:0;
-}
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message .sender {
+    display: block;
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+  }
+
+  .message.me {
+    align-self: flex-end;
+    background: #6c5ce7;
+    color: #fff;
+    border-bottom-left-radius: 4px;
+  }
+
+  .message.other {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  #input-area {
+    display: flex;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    gap: 8px;
+  }
+
+  #message-input {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #222;
+  }
+
+  #send-btn {
+    padding: 0 20px;
+    border: none;
+    border-radius: 20px;
+    background: #6c5ce7;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  #send-btn:hover {
+    background: #5a4bd6;
+  }
+
+  #send-btn:disabled {
+    background: #999;
+    cursor: not-allowed;
+  }
+
+  #status {
+    text-align: center;
+    font-size: 12px;
+    padding: 4px;
+    opacity: 0.7;
+  }
+
+  #chat-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  #chat-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
 </style>
-
 </head>
-
 <body>
 
-<div class="header">
-🤖 AI-Life
-</div>
+<header>AI-Life</header>
+<div id="status">در حال اتصال...</div>
+<div id="chat-container"></div>
 
-<div class="chat" id="chat">
-<div class="message">
-سلام، من AI-Life هستم
+<div id="input-area">
+  <input type="text" id="message-input" placeholder="پیام خود را بنویسید..." autocomplete="off" />
+  <button id="send-btn">ارسال</button>
 </div>
-</div>
-
-<div class="input">
-<input id="text" placeholder="پیام بنویسید">
-<button onclick="send()">ارسال</button>
-</div>
-
 
 <script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-import { createClient } from 
-'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-
-const supabase = createClient(
-'https://fxszjitizojrluaqtjtl.supabase.co',
-‏'const supabase = createClient(
-'https://fxszjitizojrluaqtjtl.supabase.co',
-'sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3'
-)'
-)
+  const SUPABASE_URL const SUPABASE_URL = "https://fxszjitizojrluaqtjtl.supabase.co";
+const SUPABASE_KEY = sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3
 
 
-window.send = async function(){
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let text=document.getElementById("text");
-let chat=document.getElementById("chat");
+  const chatContainer = document.getElementById("chat-container");
+  const messageInput = document.getElementById("message-input");
+  const sendBtn = document.getElementById("send-btn");
+  const statusEl = document.getElementById("status");
 
-if(text.value!=""){
+  const CURRENT_SENDER = "من";
 
-chat.innerHTML += 
-"<div class='message'>"+text.value+"</div>";
+  function scrollToBottom() {
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
 
-await supabase
-.from('messages')
-.insert([
-{
-sender:"user",
-content:text.value
-}
-]);
+  function renderMessage(sender, content) {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("message");
+    wrapper.classList.add(sender === CURRENT_SENDER ? "me" : "other");
 
-text.value="";
-}
+    const senderEl = document.createElement("span");
+    senderEl.classList.add("sender");
+    senderEl.textContent = sender;
 
-}
+    const contentEl = document.createElement("div");
+    contentEl.textContent = content;
 
+    wrapper.appendChild(senderEl);
+    wrapper.appendChild(contentEl);
+    chatContainer.appendChild(wrapper);
+    scrollToBottom();
+  }
+
+  async function loadMessages() {
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .order("id", { ascending: true });
+
+      if (error) {
+        console.error("خطا در دریافت پیام‌ها:", error.message);
+        statusEl.textContent = "خطا در بارگذاری پیام‌ها";
+        return;
+      }
+
+      chatContainer.innerHTML = "";
+      if (data && data.length > 0) {
+        data.forEach((msg) => renderMessage(msg.sender, msg.content));
+      }
+      statusEl.textContent = "متصل";
+    } catch (err) {
+      console.error("خطای غیرمنتظره:", err);
+      statusEl.textContent = "خطا در اتصال";
+    }
+  }
+
+  async function sendMessage() {
+    const content = messageInput.value.trim();
+    if (content === "") return;
+
+    sendBtn.disabled = true;
+
+    renderMessage(CURRENT_SENDER, content);
+    messageInput.value = "";
+    messageInput.focus();
+
+    try {
+      const { error } = await supabase
+        .from("messages")
+        .insert([{ sender: CURRENT_SENDER, content: content }]);
+
+      if (error) {
+        console.error("خطا در ذخیره پیام:", error.message);
+        statusEl.textContent = "خطا در ذخیره پیام";
+      }
+    } catch (err) {
+      console.error("خطای غیرمنتظره در ارسال:", err);
+      statusEl.textContent = "خطا در ارسال پیام";
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+
+  messageInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function subscribeToNewMessages() {
+    supabase
+      .channel("public:messages")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          const msg = payload.new;
+          if (msg.sender === CURRENT_SENDER) return;
+          renderMessage(msg.sender, msg.content);
+        }
+      )
+      .subscribe();
+  }
+
+  loadMessages();
+  subscribeToNewMessages();
 </script>
 
 </body>
