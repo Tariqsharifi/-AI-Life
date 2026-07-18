@@ -219,11 +219,11 @@ const SUPABASE_KEY = "sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3";
       const { error } = await supabase
         .from("messages")
         .insert([{ sender: CURRENT_SENDER, content: content }]);
-
-      if (error) {
-        console.error("خطا در ذخیره پیام:", error.message);
-        statusEl.textContent = "خطا در ذخیره پیام";
-      }
+if (error) {
+  alert(JSON.stringify(error));
+  console.error(error);
+  statusEl.textContent = error.message;
+} 
     } catch (err) {
       console.error("خطای غیرمنتظره در ارسال:", err);
       statusEl.textContent = "خطا در ارسال پیام";
