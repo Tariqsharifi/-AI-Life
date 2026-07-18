@@ -196,7 +196,9 @@ const SUPABASE_KEY = "sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3";
 }
       chatContainer.innerHTML = "";
       if (data && data.length > 0) {
-        data.forEach((msg) => renderMessage(msg.sender, msg.content));
+   if (msg.username === CURRENT_SENDER) return;
+renderMessage(msg.username, msg.message);
+data.forEach((msg) => renderMessage(msg.sender, msg.content);
       }
       statusEl.textContent = "متصل";
     } catch (err) {
@@ -218,7 +220,7 @@ const SUPABASE_KEY = "sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3";
     try {
       const { error } = await supabase
         .from("messages")
-        .insert([{ sender: CURRENT_SENDER, content: content }]);
+       .insert([{ username: CURRENT_SENDER, message: content }]);
 if (error) {
   alert(JSON.stringify(error));
   console.error(error);
