@@ -1,3 +1,78 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Life</title>
+
+<style>
+body{
+margin:0;
+font-family:tahoma;
+background:#e9f5ff;
+}
+
+.header{
+background:#2196f3;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+}
+
+.chat{
+height:70vh;
+padding:15px;
+overflow:auto;
+}
+
+.message{
+background:white;
+padding:10px;
+margin:10px;
+border-radius:12px;
+}
+
+.input{
+position:fixed;
+bottom:0;
+width:100%;
+display:flex;
+}
+
+input{
+flex:1;
+padding:15px;
+}
+
+button{
+width:80px;
+background:#2196f3;
+color:white;
+border:0;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+🤖 AI-Life
+</div>
+
+<div class="chat" id="chat">
+<div class="message">
+سلام، من AI-Life هستم
+</div>
+</div>
+
+<div class="input">
+<input id="text" placeholder="پیام بنویسید">
+<button onclick="send()">ارسال</button>
+</div>
+
+
 <script type="module">
 
 import { createClient } from 
@@ -6,44 +81,35 @@ import { createClient } from
 
 const supabase = createClient(
 'https://fxszjitizojrluaqtjtl.supabase.co',
-'sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3'
+‏'sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3'
 )
 
 
-window.send = async function(){
+async function send(){
 
-let input = document.getElementById("text");
-let chat = document.getElementById("chat");
+let text=document.getElementById("text");
+let chat=document.getElementById("chat");
 
-let message = input.value.trim();
+if(text.value!=""){
 
-if(message === "") return;
+chat.innerHTML += 
+"<div class='message'>"+text.value+"</div>";
 
-
-chat.innerHTML += `
-<div class="message">
-${message}
-</div>
-`;
-
-
-let { error } = await supabase
-.from("messages")
+await supabase
+.from('messages')
 .insert([
 {
 sender:"user",
-content:message
+content:text.value
 }
 ]);
 
-
-if(error){
-console.log(error);
+text.value="";
 }
-
-
-input.value = "";
 
 }
 
 </script>
+
+</body>
+</html>
