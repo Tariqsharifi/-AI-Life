@@ -264,9 +264,6 @@ const GEMINI_MODEL = "gemini-3.5-flash";
 } catch (err) {
   console.error(err);
   statusEl.textContent = "خطا";
-}
-      console.error("خطای غیرمنتظره در ارسال:", err);
-      statusEl.textContent = "خطا در ارسال پیام";
     } finally {
       sendBtn.disabled = false;
     }
