@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>شهر کوچیک</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: "Vazirmatn", "Tahoma", sans-serif;
+    background: #1a1a2e;
+    color: #fff;
+  }
+
+  .scene {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: none;
+    flex-direction: column;
+  }
+
+  .scene.active { display: flex; }
+
+  #header {
+    padding: 10px 16px;
+    text-align: center;
+    background: rgba(0,0,0,0.4);
+    font-size: 15px;
+    font-weight: bold;
+    z-index: 20;
+  }
+
+  /* ---------- نقشه شهر ---------- */
+  #city-view {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0 4px, transparent 4px 8px),
+      #4a7c3f;
+  }
+
+  #city-map {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+  }
+
+  .road-h {
+    position: absolute;
+    left: 0; right: 0;
+    height: 16%;
+    background:
+      repeating-linear-gradient(90deg, #f2c94c 0 6%, transparent 6% 10%),
+      #3a3a3a;
+    background-size: 100% 100%, 100% 100%;
+    box-shadow: 0 0 0 6px #9a9a8c;
+  }
+  .road-h.r1 { top: 40%; }
+
+  .road-v {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 16%;
+    background:
+      repeating-linear-gradient(0deg, #f2c94c 0 6%, transparent 6% 10%),
+      #3a3a3a;
+    box-shadow: 0 0 0 6px #9a9a8c;
+  }
+  .road-v.c1 { left: 42%; }
+
+  .window-row {
+    position: absolute;
+    display: flex;
+    gap: 4px;
+    left: 8%;
+    right: 8%;
+    top: 14%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .window-row .win {
+    width: 10px;
+    height: 10px;
+    background: #ffe9a8;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 2px;
+  }
+
+  .lamp {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #ffe9a8;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 3px rgba(255,233,168,0.7);
+  }
+
+  .bush {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #3d8b4c;
+    border: 2px solid #245c30;
+  }
+
+  .building {
+    position: absolute;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    text-align: center;
+    padding-bottom: 6px;
+  }
+
+  #shop-building {
+    left: 8%;
+    top: 8%;
+    width: 26%;
+    height: 24%;
+    background: #8b5e3c;
+    border: 3px solid #5c3d24;
+  }
+
+  #shop-door-marker {
+    position: absolute;
+    left: 8%;
+    top: 30%;
+    width: 26%;
+    height: 4%;
+    background: #d4af37;
+    border-radius: 0 0 4px 4px;
+  }
+
+  #building2 {
+    left: 62%;
+    top: 8%;
+    width: 30%;
+    height: 24%;
+    background: #4a5a7a;
+    border: 3px solid #2e3a52;
+  }
+
+  #building3 {
+    left: 8%;
+    top: 62%;
+    width: 30%;
+    height: 28%;
+    background: #6a4a5a;
+    border: 3px solid #422f38;
+  }
+
+  #building4 {
+    left: 62%;
+    top: 62%;
+    width: 30%;
+    height: 28%;
+    background: #5a6a4a;
+    border: 3px solid #3a4530;
+  }
+
+  .tree {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #2f7a3f;
+    border: 2px solid #1e5c2a;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  /* ماشین */
+  #car {
+    position: absolute;
+    width: 30px;
+    height: 50px;
+    z-index: 15;
+    transition: left 0.08s linear, top 0.08s linear;
+    transform-origin: center center;
+  }
+
+  #car .car-body {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 26px;
+    height: 46px;
+    background: #d63031;
+    border-radius: 8px;
+    border: 2px solid #7a1a1a;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+  }
+
+  #car .car-window {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 14px;
+    background: #a8d8f0;
+    border-radius: 3px;
+  }
+
+  /* شخصیت پیاده */
+  .character {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    z-index: 15;
+    transition: left 0.08s linear, top 0.08s linear;
+    display: none;
+  }
+
+  .character.walking { display: block; }
+
+  .character .body {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 22px;
+    border-radius: 9px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+    background: #2d6cdf;
+  }
+
+  .character .head {
+    position: absolute;
+    left: 50%;
+    top: 28%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #f0c8a0;
+    border: 2px solid rgba(0,0,0,0.2);
+    z-index: 2;
+  }
+
+  .character .arm {
+    position: absolute;
+    top: 46%;
+    width: 6px;
+    height: 14px;
+    border-radius: 3px;
+    background: #f0c8a0;
+  }
+  .character .arm.arm-left { left: 2px; transform: translateY(-50%) rotate(-8deg); }
+  .character .arm.arm-right { right: 2px; transform: translateY(-50%) rotate(8deg); }
+
+  .character .leg {
+    position: absolute;
+    bottom: -2px;
+    width: 6px;
+    height: 12px;
+    border-radius: 3px;
+    background: #3a3a4a;
+  }
+  .character .leg.leg-left { left: 9px; }
+  .character .leg.leg-right { right: 9px; }
+
+  #status {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 11px;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 10px;
+    border-radius: 10px;
+    z-index: 30;
+    max-width: 70%;
+  }
+
+  #action-btn {
+    position: absolute;
+    bottom: 130px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #6c5ce7;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: none;
+    z-index: 30;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+
+  #controls {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: 56px 56px 56px;
+    grid-template-rows: 56px 56px 56px;
+    gap: 4px;
+    z-index: 25;
+  }
+
+  .ctrl-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+  }
+  .ctrl-btn:active { background: rgba(255,255,255,0.35); }
+
+  #up { grid-column: 2; grid-row: 1; }
+  #left { grid-column: 1; grid-row: 2; }
+  #right { grid-column: 3; grid-row: 2; }
+  #down { grid-column: 2; grid-row: 3; }
+
+  /* ---------- صحنه داخل مغازه ---------- */
+  #shop-view {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #3d3d5c;
+  }
+
+  #floor {
+    position: absolute;
+    left: 8%;
+    top: 8%;
+    width: 84%;
+    height: 84%;
+    background:
+      repeating-linear-gradient(0deg, #7a6a55, #7a6a55 20px, #6e5f4c 20px, #6e5f4c 40px);
+    border: 6px solid #2e2e40;
+    border-radius: 6px;
+    box-shadow: 0 0 0 4px #1a1a2e, inset 0 0 30px rgba(0,0,0,0.4);
+  }
+
+  .item {
+    position: absolute;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+  .item .item-label {
+    position: absolute;
+    bottom: -18px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+  }
+
+  #backdrop { left: 10%; top: 12%; width: 20%; height: 30%; background: #eee; border: 3px solid #ccc; }
+  #camera-stand { left: 34%; top: 20%; width: 8%; height: 8%; background: #222; border-radius: 50%; }
+  #counter { left: 40%; top: 12%; width: 30%; height: 12%; background: #8b5e3c; }
+  #shelf { left: 65%; top: 12%; width: 20%; height: 8%; background: #4a3626; }
+  #sofa { left: 65%; top: 55%; width: 22%; height: 14%; background: #7a3b56; }
+  #plant1 { left: 12%; top: 60%; width: 8%; height: 8%; background: #2f7a3f; border-radius: 50%; }
+  #plant2 { left: 85%; top: 15%; width: 7%; height: 7%; background: #2f7a3f; border-radius: 50%; }
+
+  #shop-exit-door {
+    position: absolute;
+    bottom: 6%;
+    left: 46%;
+    width: 8%;
+    height: 4%;
+    background: #d4af37;
+    border-radius: 3px 3px 0 0;
+    z-index: 20;
+  }
+
+  #hadis-label {
+    position: absolute;
+    top: -20px;
+    right: 50%;
+    transform: translateX(50%);
+    font-size: 10px;
+    background: rgba(0,0,0,0.6);
+    padding: 1px 6px;
+    border-radius: 8px;
+    white-space: nowrap;
+    z-index: 20;
+  }
+
+  #hadis { left: 44%; top: 15%; }
+  #hadis .body { background: #e17055; }
+  #hadis .head { background: #f4d0aa; }
+
+  /* ---------- پنجره چت ---------- */
+  #chat-overlay {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 60%;
+    background: rgba(20, 20, 35, 0.97);
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -6px 20px rgba(0,0,0,0.5);
+  }
+  #chat-overlay.active { display: flex; }
+
+  #chat-header {
+    padding: 12px 16px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #chat-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    padding: 4px 10px;
+  }
+
+  #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chat-msg {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .chat-msg.me {
+    align-self: flex-end;
+    background: #2d6cdf;
+  }
+  .chat-msg.hadis {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.15);
+  }
+
+  #chat-input-row {
+    display: flex;
+    padding: 10px;
+    gap: 8px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  #chat-input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 16px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: rgba(255,255,255,0.9);
+    color: #222;
+  }
+
+  #chat-send {
+    padding: 0 16px;
+    border: none;
+    border-radius: 16px;
+    background: #6c5ce7;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  #chat-status {
+    text-align: center;
+    font-size: 11px;
+    padding: 2px;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- ---------------- صحنه شهر ---------------- -->
+<div class="scene active" id="scene-city">
+  <div id="header">🏙️ شهر کوچیک</div>
+  <div id="city-view">
+    <div id="status">با دکمه‌ها رانندگی کن و برو نزدیک مغازه</div>
+
+    <div id="city-map">
+      <div class="road-h r1"></div>
+      <div class="road-v c1"></div>
+
+      <div class="building" id="shop-building">استودیو حدیث</div>
+      <div class="window-row" style="left:9%; top:9%; width:24%;">
+        <div class="win"></div><div class="win"></div><div class="win"></div>
+      </div>
+      <div id="shop-door-marker"></div>
+
+      <div class="building" id="building2">فروشگاه</div>
+      <div class="window-row" style="left:63%; top:9%; width:28%;">
+        <div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div>
+      </div>
+
+      <div class="building" id="building3">کافه</div>
+      <div class="window-row" style="left:9%; top:63%; width:28%;">
+        <div class="win"></div><div class="win"></div><div class="win"></div>
+      </div>
+
+      <div class="building" id="building4">خانه</div>
+      <div class="window-row" style="left:63%; top:63%; width:28%;">
+        <div class="win"></div><div class="win"></div>
+      </div>
+
+      <div class="tree" style="left:50%; top:50%;"></div>
+      <div class="tree" style="left:55%; top:52%;"></div>
+      <div class="tree" style="left:35%; top:50%;"></div>
+      <div class="tree" style="left:2%; top:38%;"></div>
+      <div class="tree" style="left:2%; top:56%;"></div>
+      <div class="tree" style="left:96%; top:38%;"></div>
+      <div class="tree" style="left:96%; top:56%;"></div>
+
+      <div class="bush" style="left:36%; top:9%;"></div>
+      <div class="bush" style="left:6%; top:6%;"></div>
+      <div class="bush" style="left:6%; top:32%;"></div>
+
+      <div class="lamp" style="left:40%; top:38%;"></div>
+      <div class="lamp" style="left:40%; top:58%;"></div>
+      <div class="lamp" style="left:60%; top:38%;"></div>
+      <div class="lamp" style="left:60%; top:58%;"></div>
+
+      <div id="car">
+        <div class="car-body"></div>
+        <div class="car-window"></div>
+      </div>
+
+      <div id="walker" class="character">
+        <div class="leg leg-left"></div>
+        <div class="leg leg-right"></div>
+        <div class="body"></div>
+        <div class="arm arm-left"></div>
+        <div class="arm arm-right"></div>
+        <div class="head"></div>
+      </div>
+    </div>
+
+    <button id="action-btn">🚪 پیاده شدن</button>
+  </div>
+</div>
+
+<!-- ---------------- صحنه داخل مغازه ---------------- -->
+<div class="scene" id="scene-shop">
+  <div id="header">📷 استودیو حدیث</div>
+  <div id="shop-view">
+    <div id="floor">
+      <div id="backdrop" class="item"><span class="item-label">پرده سفید</span></div>
+      <div id="camera-stand" class="item">📷</div>
+      <div id="counter" class="item"><span class="item-label">پیشخوان</span></div>
+      <div id="shelf" class="item"><span class="item-label">قفسه</span></div>
+      <div id="sofa" class="item"><span class="item-label">مبل</span></div>
+      <div id="plant1" class="item">🌿</div>
+      <div id="plant2" class="item">🌿</div>
+
+      <div id="hadis" class="character walking">
+        <div id="hadis-label">حدیث</div>
+        <div class="leg leg-left"></div>
+        <div class="leg leg-right"></div>
+        <div class="body"></div>
+        <div class="arm arm-left"></div>
+        <div class="arm arm-right"></div>
+        <div class="head"></div>
+      </div>
+
+      <div id="player-in-shop" class="character walking">
+        <div class="leg leg-left"></div>
+        <div class="leg leg-right"></div>
+        <div class="body"></div>
+        <div class="arm arm-left"></div>
+        <div class="arm arm-right"></div>
+        <div class="head"></div>
+      </div>
+    </div>
+
+    <div id="shop-exit-door"></div>
+    <button id="chat-btn" style="position:absolute; bottom:130px; left:50%; transform:translateX(-50%); background:#6c5ce7; color:#fff; border:none; padding:10px 22px; border-radius:20px; font-size:14px; display:none; z-index:30; box-shadow:0 4px 10px rgba(0,0,0,0.4);">💬 صحبت با حدیث</button>
+    <button id="exit-shop-btn" style="position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:#444; color:#fff; border:none; padding:10px 22px; border-radius:20px; font-size:13px; z-index:30;">⬅ خروج از مغازه</button>
+  </div>
+</div>
+
+<!-- ---------------- پنجره چت ---------------- -->
+<div id="chat-overlay">
+  <div id="chat-header">
+    <span>💬 حدیث</span>
+    <button id="chat-close">✕ بستن</button>
+  </div>
+  <div id="chat-status">در حال اتصال...</div>
+  <div id="chat-messages"></div>
+  <div id="chat-input-row">
+    <input type="text" id="chat-input" placeholder="پیامت رو بنویس..." autocomplete="off" />
+    <button id="chat-send">ارسال</button>
+  </div>
+</div>
+
+<!-- ---------------- دکمه‌های کنترل (همیشه روی صفحه) ---------------- -->
+<div id="controls">
+  <button class="ctrl-btn" id="up">▲</button>
+  <button class="ctrl-btn" id="left">◀</button>
+  <button class="ctrl-btn" id="right">▶</button>
+  <button class="ctrl-btn" id="down">▼</button>
+</div>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  const SUPABASE_URL = "https://wzbjlacxmwkhdqhfargh.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_bYG_5bdL1LBCnzb-dQipUQ_Y5TLnhh3";
+  const EDGE_FUNCTION_URL = "https://wzbjlacxmwkhdqhfargh.supabase.co/functions/v1/gemini-chat";
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const HADIS_PERSONA = "تو حدیث هستی، یک دختر ۱۸ ساله. تو صاحب و فروشنده‌ی یک مغازه‌ی عکاسی کوچیک به اسم 'استودیو حدیث' هستی که تو یه شهر کوچیک واقع شده. همین الان تو مغازه‌ات پشت پیشخوان ایستادی و مشتری‌ها میان و میرن. کاربر (که الان داره باهات صحبت می‌کنه) به تازگی وارد مغازه‌ات شده. مثل یک فروشنده‌ی واقعی و صمیمی رفتار کن: به مشتری خوش‌آمد بگو، بپرس دنبال چی می‌گرده، و طبیعی و مثل یک انسان واقعی جواب بده. هرگز نگو هوش مصنوعی یا ربات هستی. همیشه به فارسی و طبیعی صحبت کن. پاسخ‌هایت را کوتاه نگه دار، مثل یک پیامک واقعی — معمولاً یک تا سه جمله کافی است، مگر اینکه واقعاً لازم باشد بیشتر توضیح بدهی. هرگز توصیف صحنه یا صدا (مثل صدای پرینتر یا حرکات دست) ننویس؛ فقط چیزی را بنویس که یک آدم واقعی در پیامک تایپ می‌کند.";
+
+  const chatOverlay = document.getElementById("chat-overlay");
+  const chatMessages = document.getElementById("chat-messages");
+  const chatInput = document.getElementById("chat-input");
+  const chatSend = document.getElementById("chat-send");
+  const chatClose = document.getElementById("chat-close");
+  const chatStatus = document.getElementById("chat-status");
+
+  function renderChatMessage(sender, content) {
+    const el = document.createElement("div");
+    el.classList.add("chat-msg", sender === "من" ? "me" : "hadis");
+    el.textContent = content;
+    chatMessages.appendChild(el);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  async function loadChatMessages() {
+    chatStatus.textContent = "در حال اتصال...";
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .order("id", { ascending: true })
+      .limit(20);
+
+    chatMessages.innerHTML = "";
+    if (!error && data) {
+      data.forEach((m) => renderChatMessage(m.username, m.message));
+    }
+    chatStatus.textContent = "متصل";
+  }
+
+  async function sendChatMessage() {
+    const content = chatInput.value.trim();
+    if (content === "") return;
+
+    chatSend.disabled = true;
+    renderChatMessage("من", content);
+    chatInput.value = "";
+
+    try {
+      await supabase.from("messages").insert([{ username: "من", message: content }]);
+
+      const response = await fetch(EDGE_FUNCTION_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: content,
+          npc: { persona: HADIS_PERSONA }
+        })
+      });
+
+      const data = await response.json();
+      const aiReply = data.reply || "متأسفم، نتوانستم پاسخ بدهم.";
+
+      renderChatMessage("حدیث", aiReply);
+      await supabase.from("messages").insert([{ username: "حدیث", message: aiReply }]);
+
+      if (typeof performHadisAction === "function") {
+        performHadisAction(data.action);
+      }
+    } catch (err) {
+      console.error(err);
+      chatStatus.textContent = "خطا در ارسال پیام";
+    } finally {
+      chatSend.disabled = false;
+    }
+  }
+
+  chatSend.addEventListener("click", sendChatMessage);
+  chatInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  });
+
+  chatClose.addEventListener("click", () => {
+    chatOverlay.classList.remove("active");
+  });
+
+  function openChat() {
+    chatOverlay.classList.add("active");
+    loadChatMessages();
+  }
+
+  const sceneCity = document.getElementById("scene-city");
+  const sceneShop = document.getElementById("scene-shop");
+
+  const car = document.getElementById("car");
+  const walker = document.getElementById("walker");
+  const cityStatus = document.getElementById("status");
+  const actionBtn = document.getElementById("action-btn");
+
+  const playerInShop = document.getElementById("player-in-shop");
+  const hadis = document.getElementById("hadis");
+  const chatBtn = document.getElementById("chat-btn");
+  const exitShopBtn = document.getElementById("exit-shop-btn");
+
+  let mode = "driving"; // driving | walking-city | in-shop
+  let pos = { x: 50, y: 70 };
+  let angle = 0;
+  const carSpeed = 2.4;
+  const walkSpeed = 1.8;
+
+  let keys = { up: false, down: false, left: false, right: false };
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function bindControl(id, dir) {
+    const btn = document.getElementById(id);
+    const start = (e) => { e.preventDefault(); keys[dir] = true; };
+    const end = (e) => { e.preventDefault(); keys[dir] = false; };
+    btn.addEventListener("touchstart", start);
+    btn.addEventListener("touchend", end);
+    btn.addEventListener("touchcancel", end);
+    btn.addEventListener("mousedown", start);
+    btn.addEventListener("mouseup", end);
+    btn.addEventListener("mouseleave", end);
+  }
+  bindControl("up", "up");
+  bindControl("down", "down");
+  bindControl("left", "left");
+  bindControl("right", "right");
+
+  // ---------- حلقه بازی صحنه شهر ----------
+  function cityLoop() {
+    if (mode === "driving") {
+      let dx = 0, dy = 0;
+      if (keys.up) dy -= 1;
+      if (keys.down) dy += 1;
+      if (keys.left) dx -= 1;
+      if (keys.right) dx += 1;
+
+      if (dx !== 0 || dy !== 0) {
+        angle = Math.atan2(dx, -dy) * (180 / Math.PI);
+        pos.x += dx * carSpeed * 0.35;
+        pos.y += dy * carSpeed * 0.35;
+      }
+
+      pos.x = clamp(pos.x, 5, 95);
+      pos.y = clamp(pos.y, 8, 92);
+
+      car.style.left = pos.x + "%";
+      car.style.top = pos.y + "%";
+      car.style.transform = `rotate(${angle}deg)`;
+
+      checkNearShopDriving();
+    } else if (mode === "walking-city") {
+      let dx = 0, dy = 0;
+      if (keys.up) dy -= 1;
+      if (keys.down) dy += 1;
+      if (keys.left) dx -= 1;
+      if (keys.right) dx += 1;
+
+      pos.x += dx * walkSpeed * 0.35;
+      pos.y += dy * walkSpeed * 0.35;
+      pos.x = clamp(pos.x, 5, 95);
+      pos.y = clamp(pos.y, 8, 92);
+
+      walker.style.left = pos.x + "%";
+      walker.style.top = pos.y + "%";
+
+      checkNearShopDoorWalking();
+    }
+  }
+  setInterval(cityLoop, 16);
+
+  function distanceTo(x, y) {
+    const dx = pos.x - x;
+    const dy = pos.y - y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // نزدیکی به مغازه هنگام رانندگی -> پیشنهاد پارک و پیاده شدن
+  function checkNearShopDriving() {
+    const dist = distanceTo(21, 32); // نزدیک درب مغازه
+    if (dist < 14) {
+      actionBtn.style.display = "block";
+      actionBtn.textContent = "🚪 پارک و پیاده شدن";
+      cityStatus.textContent = "نزدیک مغازه‌ای، می‌تونی پیاده بشی";
+    } else {
+      actionBtn.style.display = "none";
+      cityStatus.textContent = "با دکمه‌ها رانندگی کن و برو نزدیک مغازه";
+    }
+  }
+
+  function checkNearShopDoorWalking() {
+    const dist = distanceTo(21, 32);
+    if (dist < 10) {
+      actionBtn.style.display = "block";
+      actionBtn.textContent = "🚪 ورود به مغازه";
+      cityStatus.textContent = "جلوی درب مغازه‌ای";
+    } else {
+      actionBtn.style.display = "none";
+      cityStatus.textContent = "پیاده در حال قدم زدن...";
+    }
+  }
+
+  actionBtn.addEventListener("click", () => {
+    if (mode === "driving") {
+      // پارک کردن ماشین و تبدیل به پیاده
+      mode = "walking-city";
+      car.style.display = "none";
+      walker.classList.add("walking");
+      walker.style.left = pos.x + "%";
+      walker.style.top = pos.y + "%";
+      actionBtn.style.display = "none";
+    } else if (mode === "walking-city") {
+      enterShop();
+    }
+  });
+
+  function enterShop() {
+    sceneCity.classList.remove("active");
+    sceneShop.classList.add("active");
+    mode = "in-shop";
+    shopPos = { x: 50, y: 70 };
+    updateShopPlayerPos();
+  }
+
+  // ---------- حلقه داخل مغازه ----------
+  let shopPos = { x: 50, y: 70 };
+  const shopWalkSpeed = 1.8;
+
+  function updateShopPlayerPos() {
+    playerInShop.style.left = shopPos.x + "%";
+    playerInShop.style.top = shopPos.y + "%";
+  }
+  updateShopPlayerPos();
+
+  function shopLoop() {
+    if (mode !== "in-shop") return;
+    let dx = 0, dy = 0;
+    if (keys.up) dy -= 1;
+    if (keys.down) dy += 1;
+    if (keys.left) dx -= 1;
+    if (keys.right) dx += 1;
+
+    shopPos.x += dx * shopWalkSpeed * 0.35;
+    shopPos.y += dy * shopWalkSpeed * 0.35;
+    shopPos.x = clamp(shopPos.x, 10, 90);
+    shopPos.y = clamp(shopPos.y, 12, 88);
+
+    updateShopPlayerPos();
+    checkDistanceToHadis();
+  }
+  setInterval(shopLoop, 16);
+
+  function checkDistanceToHadis() {
+    const dx = shopPos.x - hadisPos.x;
+    const dy = shopPos.y - hadisPos.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 12) {
+      chatBtn.style.display = "block";
+    } else {
+      chatBtn.style.display = "none";
+    }
+  }
+
+  // ---------- حرکت هوشمند حدیث بر اساس گفتگو ----------
+  const hadisLocations = {
+    goto_camera: { x: 38, y: 20 },
+    goto_counter: { x: 55, y: 16 },
+    goto_shelf: { x: 75, y: 16 },
+    goto_sofa: { x: 76, y: 58 },
+    goto_door: { x: 50, y: 88 },
+  };
+
+  let hadisPos = { x: 46, y: 17 };
+  let hadisTarget = { x: 46, y: 17 };
+  let hadisState = "idle"; // idle | goto | follow
+  const hadisSpeed = 0.35;
+  let idleWanderTimer = null;
+
+  function pickNewHadisTarget() {
+    if (hadisState !== "idle") return;
+    hadisTarget.x = 25 + Math.random() * 45;
+    hadisTarget.y = 15 + Math.random() * 55;
+  }
+
+  function startIdleWander() {
+    if (idleWanderTimer) clearInterval(idleWanderTimer);
+    idleWanderTimer = setInterval(pickNewHadisTarget, 4000 + Math.random() * 2000);
+  }
+  startIdleWander();
+
+  function performHadisAction(action) {
+    if (!action || action === "idle") {
+      hadisState = "idle";
+      pickNewHadisTarget();
+      return;
+    }
+
+    if (action === "goto_player") {
+      hadisState = "follow";
+      return;
+    }
+
+    if (hadisLocations[action]) {
+      hadisState = "goto";
+      hadisTarget = { ...hadisLocations[action] };
+    }
+  }
+
+  function hadisMoveLoop() {
+    if (mode !== "in-shop") return;
+
+    if (hadisState === "follow") {
+      // یک قدم فاصله از بازیکن نگه دار
+      const dx = shopPos.x - hadisPos.x;
+      const dy = shopPos.y - hadisPos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 10) {
+        hadisPos.x += (dx / dist) * hadisSpeed;
+        hadisPos.y += (dy / dist) * hadisSpeed;
+      }
+    } else {
+      const dx = hadisTarget.x - hadisPos.x;
+      const dy = hadisTarget.y - hadisPos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist > 1) {
+        hadisPos.x += (dx / dist) * hadisSpeed;
+        hadisPos.y += (dy / dist) * hadisSpeed;
+      } else if (hadisState === "goto") {
+        hadisState = "idle";
+      }
+    }
+
+    hadis.style.left = hadisPos.x + "%";
+    hadis.style.top = hadisPos.y + "%";
+  }
+  setInterval(hadisMoveLoop, 16);
+
+  chatBtn.addEventListener("click", () => {
+    openChat();
+  });
+
+  exitShopBtn.addEventListener("click", () => {
+    sceneShop.classList.remove("active");
+    sceneCity.classList.add("active");
+    mode = "walking-city";
+    pos = { x: 24, y: 34 };
+    walker.style.left = pos.x + "%";
+    walker.style.top = pos.y + "%";
+  });
+</script>
+
+</body>
+</html>
