@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل مدیریت | بازارچه</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --paper:#F6F1E5; --ink:#271B1E; --plum:#2E1F3C;
+    --saffron:#D4A017; --pomegranate:#A32638;
+    --line: rgba(39,27,30,0.14); --card:#FFFDF8;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Vazirmatn',sans-serif; }
+  header{ background:var(--plum); color:var(--paper); padding:16px 18px; font-weight:800; font-size:20px; }
+  .wrap{ max-width:600px; margin:0 auto; padding:18px; }
+
+  .box{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; margin-bottom:18px; }
+  label{ display:block; font-size:13px; font-weight:600; margin:12px 0 6px; }
+  input, select{
+    width:100%; padding:11px 12px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:'Vazirmatn'; font-size:14px; background:#fff; color:var(--ink);
+  }
+  button{
+    font-family:'Vazirmatn'; font-weight:700; font-size:14px; border:none;
+    border-radius:10px; padding:12px 16px; cursor:pointer; width:100%; margin-top:16px;
+  }
+  .btn-primary{ background:var(--saffron); color:var(--plum); }
+  .btn-danger{ background:var(--pomegranate); color:#fff; padding:8px 12px; width:auto; margin:0; font-size:12px; }
+  .btn-secondary{ background:transparent; border:1.5px solid var(--line); color:var(--ink); }
+
+  .msg{ font-size:13px; padding:10px 12px; border-radius:10px; margin-top:10px; display:none; }
+  .msg.show{ display:block; }
+  .msg.ok{ background:#DDEBE0; color:#2A6B3B; }
+  .msg.err{ background:#F3D3D8; color:#8C1F2B; }
+
+  .plist{ display:flex; flex-direction:column; gap:10px; }
+  .prow{
+    display:flex; align-items:center; gap:12px; background:#fff;
+    border:1px solid var(--line); border-radius:12px; padding:10px;
+  }
+  .prow img{ width:52px; height:52px; border-radius:8px; object-fit:cover; background:#eee; flex-shrink:0; }
+  .prow .pinfo{ flex:1; min-width:0; }
+  .prow .pname{ font-size:13.5px; font-weight:700; }
+  .prow .pmeta{ font-size:11.5px; color:rgba(39,27,30,0.6); margin-top:2px; }
+
+  #loginBox, #panelBox{ display:none; }
+  #loginBox.show, #panelBox.show{ display:block; }
+
+  h2{ font-size:16px; margin:0 0 4px; }
+  .subtitle{ font-size:12.5px; color:rgba(39,27,30,0.55); margin-bottom:14px; }
+</style>
+</head>
+<body>
+
+<header>پنل مدیریت بازارچه</header>
+<div class="wrap">
+
+  <!-- Login -->
+  <div class="box" id="loginBox">
+    <h2>ورود ادمین</h2>
+    <div class="subtitle">فقط خودت به این صفحه دسترسی داری</div>
+    <label>ایمیل</label>
+    <input type="email" id="loginEmail" placeholder="ایمیل خودت را وارد کن" dir="ltr">
+    <label>رمز عبور</label>
+    <input type="password" id="loginPass" placeholder="رمز عبور" dir="ltr">
+    <button class="btn-primary" onclick="doLogin()">ورود</button>
+    <div class="msg" id="loginMsg"></div>
+  </div>
+
+  <!-- Panel -->
+  <div id="panelBox">
+    <div class="box">
+      <h2>افزودن محصول جدید</h2>
+      <label>اسم محصول</label>
+      <input type="text" id="pName" placeholder="مثلاً سطل زباله پلاستیکی">
+      <label>قیمت (تومان)</label>
+      <input type="number" id="pPrice" placeholder="650000">
+      <label>دسته‌بندی</label>
+      <input type="text" id="pCat" placeholder="مثلاً ظروف و لوازم پلاستیکی">
+      <label>اسم مغازه (اختیاری)</label>
+      <input type="text" id="pShop" placeholder="مثلاً بازارچه میلاد">
+      <label>عکس محصول</label>
+      <input type="file" id="pImage" accept="image/*">
+      <button class="btn-primary" onclick="addProduct()">افزودن محصول</button>
+      <div class="msg" id="addMsg"></div>
+    </div>
+
+    <div class="box">
+      <h2>محصولات موجود</h2>
+      <div class="plist" id="plist"></div>
+    </div>
+
+    <button class="btn-secondary" onclick="doLogout()">خروج از حساب</button>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = "https://cmzbiyscsalzopsdydtg.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtemJpeXNjc2Fsem9wc2R5ZHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1ODEwODMsImV4cCI6MjEwMTE1NzA4M30.tuNc5Yftdi-402RCEojcbeiDszaJcfEewqr9UADffHU";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function showMsg(elId, text, isOk){
+    const el = document.getElementById(elId);
+    el.textContent = text;
+    el.className = 'msg show ' + (isOk ? 'ok' : 'err');
+  }
+
+  async function checkSession(){
+    const { data } = await sb.auth.getSession();
+    if(data.session){
+      document.getElementById('loginBox').classList.remove('show');
+      document.getElementById('panelBox').classList.add('show');
+      loadProducts();
+    } else {
+      document.getElementById('loginBox').classList.add('show');
+      document.getElementById('panelBox').classList.remove('show');
+    }
+  }
+
+  async function doLogin(){
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPass').value;
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){
+      showMsg('loginMsg', 'ایمیل یا رمز اشتباه است', false);
+    } else {
+      checkSession();
+    }
+  }
+
+  async function doLogout(){
+    await sb.auth.signOut();
+    checkSession();
+  }
+
+  async function addProduct(){
+    const name = document.getElementById('pName').value.trim();
+    const price = document.getElementById('pPrice').value;
+    const category = document.getElementById('pCat').value.trim();
+    const shop = document.getElementById('pShop').value.trim();
+    const fileInput = document.getElementById('pImage');
+    const file = fileInput.files[0];
+
+    if(!name || !price || !category){
+      showMsg('addMsg', 'اسم، قیمت و دسته‌بندی را پر کن', false);
+      return;
+    }
+
+    let imageUrl = null;
+
+    if(file){
+      const fileName = `${Date.now()}_${file.name}`;
+      const { data: uploadData, error: uploadError } = await sb.storage
+        .from('product-images')
+        .upload(fileName, file);
+
+      if(uploadError){
+        showMsg('addMsg', 'خطا در آپلود عکس: ' + uploadError.message, false);
+        return;
+      }
+
+      const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
+      imageUrl = urlData.publicUrl;
+    }
+
+    const { error } = await sb.from('products').insert({
+      name, price: parseInt(price), category,
+      shop_name: shop || null, image_url: imageUrl
+    });
+
+    if(error){
+      showMsg('addMsg', 'خطا: ' + error.message, false);
+    } else {
+      showMsg('addMsg', 'محصول با موفقیت اضافه شد ✅', true);
+      document.getElementById('pName').value='';
+      document.getElementById('pPrice').value='';
+      document.getElementById('pCat').value='';
+      document.getElementById('pShop').value='';
+      fileInput.value='';
+      loadProducts();
+    }
+  }
+
+  async function loadProducts(){
+    const { data, error } = await sb.from('products').select('*').order('created_at', {ascending:false});
+    const list = document.getElementById('plist');
+    if(error || !data || data.length===0){
+      list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">هنوز محصولی اضافه نشده</div>';
+      return;
+    }
+    list.innerHTML = data.map(p => `
+      <div class="prow">
+        <img src="${p.image_url || ''}" onerror="this.style.background='#eee'; this.src='';">
+        <div class="pinfo">
+          <div class="pname">${p.name} ${p.in_stock===false ? '<span style="color:#A32638;font-size:11px;">(ناموجود)</span>' : ''}</div>
+          <div class="pmeta">${p.category} · ${Number(p.price).toLocaleString('fa-IR')} تومان</div>
+        </div>
+        <button class="btn-secondary" style="width:auto;margin:0;padding:8px 10px;font-size:11.5px;" onclick="toggleStock('${p.id}', ${p.in_stock===false ? 'true' : 'false'})">${p.in_stock===false ? 'موجود کن' : 'ناموجود کن'}</button>
+        <button class="btn-danger" onclick="deleteProduct('${p.id}')">حذف</button>
+      </div>
+    `).join('');
+  }
+
+  async function toggleStock(id, newStatus){
+    const { error } = await sb.from('products').update({ in_stock: newStatus }).eq('id', id);
+    if(error){
+      alert('خطا: ' + error.message);
+    } else {
+      loadProducts();
+    }
+  }
+
+  async function deleteProduct(id){
+    if(!confirm('مطمئنی می‌خوای این محصول حذف بشه؟')) return;
+    const { error } = await sb.from('products').delete().eq('id', id);
+    if(error){
+      alert('خطا در حذف: ' + error.message);
+    } else {
+      loadProducts();
+    }
+  }
+
+  checkSession();
+</script>
+
+</body>
+</html>
