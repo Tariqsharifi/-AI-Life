@@ -904,7 +904,8 @@ function renderWishlistDrawer(){
   const body = document.getElementById('wishBody');
   const items = products.filter(p => wishlist.includes(p.id));
   if(items.length===0){
-    body.innerHTML = `<div class="empty-drawer">هنوز چیزی به علاقه‌مندی‌ها اضافه نکردی 🤍</div>`;
+    body.innerHTML = `<div class="empty-drawer"><div class="icon">🤍</div><div>هنوز چیزی به علاقه‌مندی‌ها اضافه نکردی</div><button onclick="closeWishlist()">برو به فروشگاه</button></div>`;
+
     return;
   }
   body.innerHTML = items.map(p => `
