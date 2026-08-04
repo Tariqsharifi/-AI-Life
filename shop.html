@@ -986,7 +986,8 @@ function renderCartDrawer(){
   const body = document.getElementById('cartBody');
   const foot = document.getElementById('cartFoot');
   if(cart.length===0){
-    body.innerHTML = `<div class="empty-drawer">سبد خریدت خالیه 🛍</div>`;
+    body.innerHTML = `<div class="empty-drawer"><div class="icon">🛍</div><div>سبد خریدت خالیه</div><button onclick="closeCart()">شروع خرید</button></div>`;
+
     foot.style.display = 'none';
     return;
   }
