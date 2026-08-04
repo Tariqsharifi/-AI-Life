@@ -956,8 +956,13 @@ function addToCart(id, variant){
   else cart.push({ id, variant: variant || null, qty: 1 });
   saveCart();
   updateBadges();
+  const cartBtn = document.getElementById('cartIconBtn');
+  cartBtn.classList.remove('bump');
+  void cartBtn.offsetWidth;
+  cartBtn.classList.add('bump');
   if(document.getElementById('cartDrawer').classList.contains('open')) renderCartDrawer();
 }
+
 
 function changeQty(id, variant, delta){
   const key = cartKey(id, variant);
