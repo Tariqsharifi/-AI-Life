@@ -266,7 +266,9 @@
     border:none; width:28px; height:28px; border-radius:50%; font-size:15px;
     display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--pomegranate);
   }
-  .heart-btn.active{ background:var(--pomegranate); color:#fff; }
+    .heart-btn.active{ background:var(--pomegranate); color:#fff; animation:heartPop .35s ease; }
+  @keyframes heartPop{ 0%{transform:scale(1);} 40%{transform:scale(1.35);} 100%{transform:scale(1);} }
+
 
   /* ---------- Rating stars ---------- */
   .stars{ font-size:12px; color:var(--saffron); letter-spacing:1px; }
