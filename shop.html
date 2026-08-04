@@ -73,6 +73,21 @@
   }
   .search-box svg{ flex-shrink:0; opacity:0.55; }
 
+  /* ---------- Banner slider ---------- */
+  .banner-slider{ max-width:1000px; margin:14px auto 0; padding:0 18px; position:relative; }
+  .banner-track{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:0; border-radius:16px; scrollbar-width:none; }
+  .banner-track::-webkit-scrollbar{ display:none; }
+  .banner-slide{ flex:0 0 100%; scroll-snap-align:start; aspect-ratio:2.2/1; border-radius:16px; overflow:hidden; position:relative; cursor:pointer; background:#eee; }
+  .banner-slide img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .banner-slide .banner-title{
+    position:absolute; bottom:0; right:0; left:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+    color:#fff; padding:16px 14px 10px; font-weight:800; font-size:14px;
+  }
+  .banner-dots{ display:flex; justify-content:center; gap:6px; margin-top:8px; }
+  .banner-dots span{ width:6px; height:6px; border-radius:50%; background:var(--line); display:inline-block; }
+  .banner-dots span.active{ background:var(--plum); width:16px; border-radius:4px; transition:all .2s; }
+
   /* ---------- Category chips ---------- */
   .chip-row{
     display:flex; gap:8px; overflow-x:auto; padding:14px 18px 6px;
@@ -135,6 +150,15 @@
     padding:3px 8px; border-radius:999px;
     backdrop-filter:blur(2px);
   }
+
+  /* ---------- Product badges ---------- */
+  .badges-row{ position:absolute; bottom:8px; right:8px; display:flex; flex-direction:column; gap:4px; align-items:flex-end; z-index:2; }
+  .badge-tag{ font-size:9.5px; font-weight:800; padding:3px 8px; border-radius:999px; color:#fff; white-space:nowrap; }
+  .badge-new{ background:#2A6B3B; }
+  .badge-best{ background:var(--pomegranate); }
+  .badge-discount{ background:var(--saffron); color:var(--plum); }
+
+  .price-old{ text-decoration:line-through; color:rgba(39,27,30,0.45); font-size:11px; margin-left:5px; font-weight:600; }
 
   .info{ padding:10px 12px 12px; display:flex; flex-direction:column; gap:6px; flex:1; }
   .pname{ font-size:13.5px; font-weight:700; line-height:1.4; }
@@ -288,6 +312,7 @@
   .pd-code{ color:var(--pomegranate); font-weight:800; font-size:13px; }
   .pd-cat{ color:rgba(39,27,30,0.55); font-size:12.5px; margin-top:4px; }
   .pd-price{ font-size:20px; font-weight:800; color:var(--plum); margin-top:10px; }
+  .pd-price .price-old{ font-size:14px; }
   .pd-rate-row{ display:flex; align-items:center; gap:6px; margin-top:8px; }
   .pd-stars button{ background:none; border:none; font-size:22px; color:var(--line); cursor:pointer; }
   .pd-stars button.filled{ color:var(--saffron); }
@@ -346,6 +371,11 @@
     </div>
   </div>
 </header>
+
+<div class="banner-slider" id="bannerSlider" style="display:none;">
+  <div class="banner-track" id="bannerTrack"></div>
+  <div class="banner-dots" id="bannerDots"></div>
+</div>
 
 <div class="chip-row" id="chipRow"></div>
 <div class="sort-row">
@@ -427,6 +457,25 @@ let query = "";
 let cart = JSON.parse(localStorage.getItem('bazarcheh_cart') || '[]');
 let wishlist = JSON.parse(localStorage.getItem('bazarcheh_wishlist') || '[]');
 let appliedCoupon = null;
+let bestsellerIds = [];
+
+function getEffectivePrice(p){
+  if(p.discount > 0){
+    return Math.round(p.price * (1 - p.discount/100));
+  }
+  return p.price;
+}
+
+function isNewProduct(p){
+  if(!p.createdAt) return false;
+  const created = new Date(p.createdAt);
+  const now = new Date();
+  return (now - created) < 7*24*60*60*1000;
+}
+
+function computeBestsellerIds(){
+  return products.filter(p=>p.orderCount>0).sort((a,b)=>b.orderCount-a.orderCount).slice(0,3).map(p=>p.id);
+}
 
 async function loadProducts(){
   const grid = document.getElementById('grid');
@@ -451,12 +500,46 @@ async function loadProducts(){
     id: p.id, name: p.name, code: p.code, cat: p.category, price: p.price,
     shop: p.shop_name || 'بازارچه', img: p.image_url, emoji: '📦',
     inStock: p.in_stock !== false, orderCount: p.order_count || 0,
+    discount: p.discount_percent || 0, createdAt: p.created_at,
     t1:'#E3E6E1', t2:'#C2C9C2'
   }));
 
+  bestsellerIds = computeBestsellerIds();
   renderChips();
   renderGrid();
   updateBadges();
+}
+
+async function loadBanners(){
+  const { data, error } = await sb.from('banners').select('*').eq('active', true).order('sort_order', {ascending:true});
+  const wrap = document.getElementById('bannerSlider');
+  const track = document.getElementById('bannerTrack');
+  const dots = document.getElementById('bannerDots');
+  if(error || !data || data.length===0){
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+  track.innerHTML = data.map(b => `
+    <div class="banner-slide" onclick="${b.link_url ? `window.open('${b.link_url}','_blank')` : ''}">
+      <img src="${b.image_url}" alt="${b.title||''}">
+      ${b.title ? `<div class="banner-title">${b.title}</div>` : ''}
+    </div>
+  `).join('');
+  dots.innerHTML = data.map((_,i) => `<span class="${i===0?'active':''}"></span>`).join('');
+
+  track.addEventListener('scroll', ()=>{
+    const idx = Math.round(track.scrollLeft / track.clientWidth);
+    dots.querySelectorAll('span').forEach((d,i)=> d.classList.toggle('active', i===idx));
+  });
+
+  if(data.length>1){
+    let autoIdx = 0;
+    setInterval(()=>{
+      autoIdx = (autoIdx+1) % data.length;
+      track.scrollTo({ left: autoIdx*track.clientWidth, behavior:'smooth' });
+    }, 5000);
+  }
 }
 
 const chipRow = document.getElementById('chipRow');
@@ -494,9 +577,24 @@ function sortProducts(list){
   const mode = document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'new';
   const copy = [...list];
   if(mode==='bestseller') copy.sort((a,b)=> b.orderCount - a.orderCount);
-  else if(mode==='priceAsc') copy.sort((a,b)=> a.price - b.price);
-  else if(mode==='priceDesc') copy.sort((a,b)=> b.price - a.price);
+  else if(mode==='priceAsc') copy.sort((a,b)=> getEffectivePrice(a) - getEffectivePrice(b));
+  else if(mode==='priceDesc') copy.sort((a,b)=> getEffectivePrice(b) - getEffectivePrice(a));
   return copy;
+}
+
+function getBadgesHtml(p){
+  let html = '';
+  if(isNewProduct(p)) html += '<span class="badge-tag badge-new">جدید</span>';
+  if(bestsellerIds.includes(p.id)) html += '<span class="badge-tag badge-best">پرفروش</span>';
+  if(p.discount > 0) html += `<span class="badge-tag badge-discount">${p.discount}٪ تخفیف</span>`;
+  return html ? `<div class="badges-row">${html}</div>` : '';
+}
+
+function getPriceHtml(p){
+  if(p.discount > 0){
+    return `<span class="price-old">${fmtPrice(p.price)}</span>${fmtPrice(getEffectivePrice(p))} <small>تومان</small>`;
+  }
+  return `${fmtPrice(p.price)} <small>تومان</small>`;
 }
 
 function renderGrid(){
@@ -522,6 +620,7 @@ function renderGrid(){
         ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <span style="display:none; width:100%; height:100%; align-items:center; justify-content:center; font-size:38px;">📦</span>` : (p.emoji || '📦')}
         <span class="shopbadge">${p.shop}</span>
+        ${getBadgesHtml(p)}
         ${!p.inStock ? '<span style="position:absolute;top:8px;left:8px;background:#A32638;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;">ناموجود</span>' : ''}
       </div>
       <div class="info" onclick="openProductDetail('${p.id}')">
@@ -529,9 +628,9 @@ function renderGrid(){
         <div class="pcat">${p.cat}</div>
         ${getRatingHtml(p.id)}
         <div class="prow">
-          <div class="price">${fmtPrice(p.price)} <small>تومان</small></div>
+          <div class="price">${getPriceHtml(p)}</div>
           ${p.inStock
-            ? `<button class="buybtn" onclick="event.stopPropagation(); orderProduct('${p.name.replace(/'/g,"\\'")}', '${(p.code||'').replace(/'/g,"\\'")}')">سفارش</button>`
+            ? `<button class="buybtn" onclick="event.stopPropagation(); orderProduct('${p.id}')">سفارش</button>`
             : `<button class="buybtn" disabled style="opacity:0.5;">ناموجود</button>`}
         </div>
       </div>
@@ -544,12 +643,27 @@ searchInput.addEventListener('input', (e)=>{
   renderGrid();
 });
 
-async function orderProduct(name, code){
-  const codeText = code ? ` (کد: ${code})` : '';
-  const msg = encodeURIComponent(`سلام، می‌خوام این محصول رو سفارش بدم: ${name}${codeText}`);
+async function orderProduct(id){
+  const p = products.find(x => x.id===id);
+  if(!p) return;
+  const codeText = p.code ? ` (کد: ${p.code})` : '';
+  const price = getEffectivePrice(p);
+  const msg = encodeURIComponent(`سلام، می‌خوام این محصول رو سفارش بدم: ${p.name}${codeText}`);
   window.open(`https://t.me/Sharifi190?text=${msg}`, '_blank');
-  const p = products.find(x => x.name===name && (x.code||'')===code);
-  if(p) sb.rpc('increment_order_count', { pid: p.id }).then(()=>{}).catch(()=>{});
+  sb.rpc('increment_order_count', { pid: p.id }).then(()=>{}).catch(()=>{});
+  recordOrder([{ name: p.name, code: p.code || '', qty: 1, price: price }], price, null);
+}
+
+/* ---------- Orders (sales report) ---------- */
+async function recordOrder(items, total, coupon){
+  try{
+    await sb.from('orders').insert({
+      items: items,
+      total: total,
+      coupon_code: coupon ? coupon.code : null,
+      discount_percent: coupon ? coupon.percent : null
+    });
+  } catch(e){}
 }
 
 /* ---------- Wishlist ---------- */
@@ -586,7 +700,7 @@ function renderWishlistDrawer(){
       <img src="${p.img||''}" onerror="this.style.background='#eee'; this.src='';">
       <div class="wi-info">
         <div class="wi-name">${p.name}</div>
-        <div class="wi-price">${fmtPrice(p.price)} تومان</div>
+        <div class="wi-price">${fmtPrice(getEffectivePrice(p))} تومان</div>
       </div>
       <button onclick="addToCart('${p.id}'); toggleWishlist('${p.id}')">افزودن به سبد</button>
     </div>
@@ -646,7 +760,7 @@ function closeCart(){
 function cartTotalRaw(){
   return cart.reduce((sum, c) => {
     const p = products.find(x => x.id===c.id);
-    return p ? sum + p.price * c.qty : sum;
+    return p ? sum + getEffectivePrice(p) * c.qty : sum;
   }, 0);
 }
 
@@ -667,7 +781,7 @@ function renderCartDrawer(){
         <img src="${p.img||''}" onerror="this.style.background='#eee'; this.src='';">
         <div class="ci-info">
           <div class="ci-name">${p.name}</div>
-          <div class="ci-price">${fmtPrice(p.price * c.qty)} تومان</div>
+          <div class="ci-price">${fmtPrice(getEffectivePrice(p) * c.qty)} تومان</div>
           <div class="qty-row">
             <button onclick="changeQty('${p.id}', -1)">−</button>
             <span>${c.qty.toLocaleString('fa-IR')}</span>
@@ -704,10 +818,12 @@ async function applyCoupon(){
 
 function checkoutCart(){
   if(cart.length===0) return;
+  let itemsData = [];
   let lines = cart.map(c => {
     const p = products.find(x => x.id===c.id);
     if(!p) return '';
     const codeText = p.code ? ` (کد: ${p.code})` : '';
+    itemsData.push({ name: p.name, code: p.code || '', qty: c.qty, price: getEffectivePrice(p) });
     return `- ${p.name}${codeText} × ${c.qty}`;
   }).filter(Boolean).join('\n');
 
@@ -722,6 +838,7 @@ function checkoutCart(){
   window.open(`https://t.me/Sharifi190?text=${msg}`, '_blank');
 
   cart.forEach(c => sb.rpc('increment_order_count', { pid: c.id }).then(()=>{}).catch(()=>{}));
+  recordOrder(itemsData, total, appliedCoupon);
 }
 
 /* ---------- Product Detail Modal ---------- */
@@ -738,7 +855,7 @@ function openProductDetail(id){
     <div class="pd-body">
       <div class="pd-name">${p.name} ${p.code ? `<span class="pd-code">[${p.code}]</span>` : ''}</div>
       <div class="pd-cat">${p.cat} · ${p.shop}</div>
-      <div class="pd-price">${fmtPrice(p.price)} تومان</div>
+      <div class="pd-price">${getPriceHtml(p)}</div>
       <div class="pd-rate-row">
         <div class="pd-stars" id="pdStars">
           ${[1,2,3,4,5].map(n => `<button class="${n<=avg?'filled':''}" onclick="rateProduct('${p.id}', ${n})">★</button>`).join('')}
@@ -748,7 +865,7 @@ function openProductDetail(id){
       <div class="pd-actions">
         ${p.inStock ? `
           <button class="pd-add" onclick="addToCart('${p.id}')">افزودن به سبد</button>
-          <button class="pd-buy" onclick="orderProduct('${p.name.replace(/'/g,"\\'")}', '${(p.code||'').replace(/'/g,"\\'")}')">سفارش سریع</button>
+          <button class="pd-buy" onclick="orderProduct('${p.id}')">سفارش سریع</button>
         ` : `<button class="pd-add" disabled style="opacity:0.5;">ناموجود</button>`}
       </div>
       ${related.length>0 ? `
@@ -887,6 +1004,7 @@ async function sendHadis(){
 }
 
 loadProducts();
+loadBanners();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(()=>{});
