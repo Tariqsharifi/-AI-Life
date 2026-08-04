@@ -719,11 +719,21 @@ const grid = document.getElementById('grid');
 const metaLine = document.getElementById('metaLine');
 const searchInput = document.getElementById('searchInput');
 
+function catIcon(c){
+  if(c==='همه') return '🗂️';
+  if(c.includes('آشپز') || c.includes('ظروف')) return '🍽️';
+  if(c.includes('حمام')) return '🛁';
+  if(c.includes('نظافت')) return '🧹';
+  if(c.includes('بهداشت')) return '🧴';
+  if(c.includes('ابزار')) return '🛠️';
+  return '📦';
+}
 function renderChips(){
   const categories = ["همه", ...Array.from(new Set(products.map(p=>p.cat)))];
   chipRow.innerHTML = categories.map(c =>
-    `<div class="chip ${c===activeCat?'active':''}" data-cat="${c}">${c}</div>`
+    `<div class="chip ${c===activeCat?'active':''}" data-cat="${c}">${catIcon(c)} ${c}</div>`
   ).join('');
+
   chipRow.querySelectorAll('.chip').forEach(el=>{
     el.addEventListener('click', ()=>{
       activeCat = el.dataset.cat;
