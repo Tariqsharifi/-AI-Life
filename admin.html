@@ -1212,7 +1212,34 @@
     }
   }
 
+  /* ---------- Backup ---------- */
+  async function downloadBackup(){
+    showMsg('backupMsg', 'در حال آماده‌سازی بکاپ...', true);
+    const tables = ['products','product_ratings','coupons','comments','orders','banners','settings','blog_posts','faqs','custom_pages','forms','form_submissions'];
+    const backup = { created_at: new Date().toISOString() };
+    for(const t of tables){
+      const { data, error } = await sb.from(t).select('*');
+      if(error){
+        showMsg('backupMsg', 'خطا در جدول ' + t + ': ' + error.message, false);
+        return;
+      }
+      backup[t] = data;
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `backup-bazarcheh-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showMsg('backupMsg', 'بکاپ دانلود شد ✅', true);
+  }
+
   checkSession();
+
 </script>
 
 </body>
