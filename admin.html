@@ -288,6 +288,21 @@
       <button class="btn-primary" onclick="downloadBackup()">دانلود بکاپ کامل</button>
       <div class="msg" id="backupMsg"></div>
     </div>
+<div class="box">
+  <h2>مدیریت ادمین‌ها</h2>
+  <div class="subtitle" id="adminsSubtitle"></div>
+
+  <div id="createAdminForm" style="display:none;">
+    <label>ایمیل ادمین جدید</label>
+    <input type="email" id="newAdminEmail" placeholder="ایمیل ادمین جدید" dir="ltr">
+    <label>رمز عبور موقت</label>
+    <input type="text" id="newAdminPassword" placeholder="حداقل ۶ کاراکتر" dir="ltr">
+    <button class="btn-primary" onclick="createAdmin()">ساخت ادمین جدید</button>
+    <div class="msg" id="adminMsg"></div>
+  </div>
+
+  <div class="plist" id="adminsList" style="margin-top:14px;"></div>
+</div>
 
     <button class="btn-secondary" onclick="doLogout()">خروج از حساب</button>
 
