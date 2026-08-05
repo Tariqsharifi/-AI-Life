@@ -346,9 +346,12 @@
       loadShippingNote();
       loadBlogPostsAdmin();
       loadFaqsAdmin();
-      loadCustomPagesAdmin();
+            loadCustomPagesAdmin();
       loadFormsAdmin();
+      currentUserEmail = data.session.user.email;
+      loadAdmins();
     } else {
+
       document.getElementById('loginBox').classList.add('show');
       document.getElementById('panelBox').classList.remove('show');
     }
