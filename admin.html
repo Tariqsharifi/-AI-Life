@@ -1334,6 +1334,7 @@ async function loadLoginLogs(){
     isOwnerAdmin = !!(me && me.role === 'owner' && me.status === 'active');
     sub.textContent = isOwnerAdmin ? 'به‌عنوان مدیر اصلی می‌تونی ادمین جدید بسازی یا دسترسی بقیه رو مدیریت کنی' : 'لیست کسانی که به پنل دسترسی دارن';
     form.style.display = isOwnerAdmin ? 'block' : 'none';
+    loadLoginLogs();
 
     list.innerHTML = data.map(a => `
       <div class="prow">
