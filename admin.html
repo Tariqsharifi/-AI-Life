@@ -347,6 +347,61 @@
     el.textContent = text;
     el.className = 'msg show ' + (isOk ? 'ok' : 'err');
   }
+function getDeviceInfo(){
+  const ua = navigator.userAgent;
+  let device = 'ناشناخته';
+  if(/iPhone/.test(ua)) device = 'آیفون';
+  else if(/iPad/.test(ua)) device = 'آیپد';
+  else if(/Android/.test(ua)) device = 'اندروید';
+  else if(/Windows/.test(ua)) device = 'ویندوز';
+  else if(/Macintosh/.test(ua)) device = 'مک';
+
+  let browser = 'ناشناخته';
+  if(/CriOS/.test(ua)) browser = 'کروم (آیفون)';
+  else if(/FxiOS/.test(ua)) browser = 'فایرفاکس (آیفون)';
+  else if(/Chrome/.test(ua)) browser = 'کروم';
+  else if(/Safari/.test(ua)) browser = 'سافاری';
+  else if(/Firefox/.test(ua)) browser = 'فایرفاکس';
+
+  const isPWA = window.navigator.standalone === true;
+  return `${device} · ${browser}${isPWA ? ' · حالت اپ' : ' · مرورگر'}`;
+}
+
+async function logDeviceInfo(){
+  const info = getDeviceInfo();
+  await sb.from('login_logs').insert({
+    email: currentUserEmail,
+    device_info: info
+  });
+}
+
+async function loadLoginLogs(){
+  const box = document.getElementById('loginLogsBox');
+  const list = document.getElementById('loginLogsList');
+  if(!isOwnerAdmin){
+    box.style.display = 'none';
+    return;
+  }
+  box.style.display = 'block';
+  const { data, error } = await sb.from('login_logs')
+    .select('*')
+    .order('logged_in_at', {ascending:false})
+    .limit(30);
+
+  if(error || !data || data.length===0){
+    list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">هنوز ورودی ثبت نشده</div>';
+    return;
+  }
+
+  list.innerHTML = data.map(l => `
+    <div class="prow">
+      <div class="pinfo">
+        <div class="pname" dir="ltr" style="text-align:right;">${l.email}</div>
+        <div class="pmeta">${l.device_info || 'نامشخص'} · ${new Date(l.logged_in_at).toLocaleString('fa-IR')}</div>
+      </div>
+    </div>
+  `).join('');
+}
 
   async function checkSession(){
     const { data } = await sb.auth.getSession();
