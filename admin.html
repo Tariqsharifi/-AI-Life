@@ -1238,10 +1238,76 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showMsg('backupMsg', 'بکاپ دانلود شد ✅', true);
+      showMsg('backupMsg', 'بکاپ دانلود شد ✅', true);
+  }
+
+  /* ---------- Admin management ---------- */
+  let currentUserEmail = null;
+  let isOwnerAdmin = false;
+
+  async function loadAdmins(){
+    const { data, error } = await sb.from('admins').select('*').order('created_at', {ascending:true});
+    const list = document.getElementById('adminsList');
+    const sub = document.getElementById('adminsSubtitle');
+    const form = document.getElementById('createAdminForm');
+    if(error || !data){
+      list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">خطا در بارگذاری ادمین‌ها</div>';
+      return;
+    }
+    const me = data.find(a => a.email === currentUserEmail);
+    isOwnerAdmin = !!(me && me.role === 'owner' && me.status === 'active');
+    sub.textContent = isOwnerAdmin ? 'به‌عنوان مدیر اصلی می‌تونی ادمین جدید بسازی یا دسترسی بقیه رو مدیریت کنی' : 'لیست کسانی که به پنل دسترسی دارن';
+    form.style.display = isOwnerAdmin ? 'block' : 'none';
+
+    list.innerHTML = data.map(a => `
+      <div class="prow">
+        <div class="pinfo">
+          <div class="pname" dir="ltr" style="text-align:right;">${a.email} ${a.role==='owner' ? '<span style="color:#D4A017;font-size:11px;">(مدیر اصلی)</span>' : ''}</div>
+          <div class="pmeta">${a.status === 'active' ? 'فعال' : 'بلاک‌شده'}</div>
+        </div>
+        ${(isOwnerAdmin && a.email !== currentUserEmail) ? `<button class="btn-secondary btn-small" onclick="toggleAdminStatus('${a.id}', '${a.status === 'active' ? 'blocked' : 'active'}')">${a.status==='active' ? 'بلاک کن' : 'فعال کن'}</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  async function toggleAdminStatus(id, newStatus){
+    const { error } = await sb.from('admins').update({ status: newStatus }).eq('id', id);
+    if(error){ alert('خطا: ' + error.message); } else { loadAdmins(); }
+  }
+
+  async function createAdmin(){
+    const email = document.getElementById('newAdminEmail').value.trim();
+    const password = document.getElementById('newAdminPassword').value;
+    if(!email || !password || password.length < 6){
+      showMsg('adminMsg', 'ایمیل و رمز حداقل ۶ کاراکتری وارد کن', false);
+      return;
+    }
+    const { data: { session } } = await sb.auth.getSession();
+    try{
+      const res = await fetch('https://cmzbiyscsalzopsdydtg.supabase.co/functions/v1/create-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        },
+        body: JSON.stringify({ email, password, requesterEmail: currentUserEmail })
+      });
+      const result = await res.json();
+      if(!res.ok || result.error){
+        showMsg('adminMsg', 'خطا: ' + (result.error || 'مشکلی پیش اومد'), false);
+      } else {
+        showMsg('adminMsg', 'ادمین جدید ساخته شد ✅', true);
+        document.getElementById('newAdminEmail').value = '';
+        document.getElementById('newAdminPassword').value = '';
+        loadAdmins();
+      }
+    } catch(err){
+      showMsg('adminMsg', 'خطا در اتصال: ' + err.message, false);
+    }
   }
 
   checkSession();
+
 
 </script>
 
