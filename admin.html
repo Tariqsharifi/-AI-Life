@@ -365,6 +365,9 @@
       loadFormsAdmin();
       currentUserEmail = data.session.user.email;
       loadAdmins();
+         logDeviceInfo();
+      loadLoginLogs();
+
     } else {
 
       document.getElementById('loginBox').classList.add('show');
