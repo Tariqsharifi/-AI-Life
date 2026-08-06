@@ -356,6 +356,10 @@
 </div>
 
 <script>
+  window.onerror = function(msg, url, line){
+  document.body.innerHTML = '<div style="padding:20px;font-size:14px;white-space:pre-wrap;">خطا: ' + msg + '<br>خط: ' + line + '</div>';
+};
+
   const SUPABASE_URL = "https://cmzbiyscsalzopsdydtg.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtemJpeXNjc2Fsem9wc2R5ZHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1ODEwODMsImV4cCI6MjEwMTE1NzA4M30.tuNc5Yftdi-402RCEojcbeiDszaJcfEewqr9UADffHU";
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
