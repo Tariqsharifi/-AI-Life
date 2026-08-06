@@ -400,12 +400,26 @@ async function loadLoginLogs(){
     return;
   }
 
-    list.innerHTML = data.map(l => `
-           <div class="pmeta">${l.device_info || 'نامشخص'} · ${new Date(l.logged_in_at).toLocaleString('fa-IR')}</div>
+  list.innerHTML = data.map(l => `
+    <div class="prow">
+      <div class="pinfo">
+        <div class="pname" dir="ltr" style="text-align:right;">${l.email}</div>
+        <div class="pmeta">${l.device_info || 'نامشخص'} · ${new Date(l.logged_in_at).toLocaleString('fa-IR')}</div>
       </div>
       <button class="btn-danger" onclick="deleteLoginLog('${l.id}')">حذف</button>
     </div>
   `).join('');
+}
+
+async function deleteLoginLog(id){
+  const { error } = await sb.from('login_logs').delete().eq('id', id);
+  if(error){ alert('خطا: ' + error.message); } else { loadLoginLogs(); }
+}
+
+async function clearAllLoginLogs(){
+  if(!confirm('همه‌ی تاریخچه ورودها پاک بشه؟')) return;
+  const { error } = await sb.from('login_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  if(error){ alert('خطا: ' + error.message); } else { loadLoginLogs(); }
 }
 
 async function deleteLoginLog(id){
