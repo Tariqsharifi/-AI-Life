@@ -353,7 +353,7 @@
   /* ---------- Product gallery + zoom ---------- */
   .pd-gallery-track{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
   .pd-gallery-track::-webkit-scrollbar{ display:none; }
-  .pd-gallery-track img{ flex:0 0 100%; scroll-snap-align:start; aspect-ratio:1.4/1; object-fit:cover; cursor:zoom-in; }
+  .pd-gallery-track img{ flex:0 0 100%; scroll-snap-align:start; aspect-ratio:1/1; object-fit:contain; background:linear-gradient(155deg, var(--tint1), var(--tint2)); cursor:zoom-in; }
   .pd-gallery-dots{ display:flex; justify-content:center; gap:6px; margin-top:6px; }
   .pd-gallery-dots span{ width:6px; height:6px; border-radius:50%; background:var(--line); }
   .pd-gallery-dots span.active{ background:var(--plum); width:16px; border-radius:4px; }
