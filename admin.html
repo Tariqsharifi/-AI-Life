@@ -418,8 +418,6 @@ async function clearAllLoginLogs(){
   const { error } = await sb.from('login_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   if(error){ alert('خطا: ' + error.message); } else { loadLoginLogs(); }
 }
- 
-}
 
   async function checkSession(){
     const { data } = await sb.auth.getSession();
