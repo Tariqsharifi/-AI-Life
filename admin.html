@@ -1367,7 +1367,7 @@ logDeviceInfo();
           <div class="pname" dir="ltr" style="text-align:right;">${a.email} ${a.role==='owner' ? '<span style="color:#D4A017;font-size:11px;">(مدیر اصلی)</span>' : ''}</div>
           <div class="pmeta">${a.status === 'active' ? 'فعال' : 'بلاک‌شده'}</div>
         </div>
-        ${(isOwnerAdmin && a.email !== currentUserEmail) ? `<button class="btn-secondary btn-small" onclick="toggleAdminStatus('${a.id}', '${a.status === 'active' ? 'blocked' : 'active'}')">${a.status==='active' ? 'بلاک کن' : 'فعال کن'}</button>` : ''}
+                ${(isOwnerAdmin && a.email !== currentUserEmail) ? `<div class="pactions"><button class="btn-secondary btn-small" onclick="toggleAdminStatus('${a.id}', '${a.status === 'active' ? 'blocked' : 'active'}')">${a.status==='active' ? 'بلاک کن' : 'فعال کن'}</button><button class="btn-danger" onclick="deleteAdmin('${a.id}')">حذف</button></div>` : ''}
       </div>
     `).join('');
   }
