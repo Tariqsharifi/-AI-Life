@@ -1266,10 +1266,9 @@ logDeviceInfo();
     }
   }
 
-  async function saveVariants(){
-
-  async function saveVariants(){
+   async function saveVariants(){
     const label = document.getElementById('editVariantLabel').value.trim();
+ 
     const variantsText = document.getElementById('editVariants').value;
     const variants = variantsText.trim() ? parseVariantsText(variantsText) : [];
     const { error } = await sb.from('products').update({
