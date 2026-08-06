@@ -1302,18 +1302,24 @@ logDeviceInfo();
     `).join('');
   }
 
-  async function addGalleryImages(){
+    async function addGalleryImages(){
     const fileInput = document.getElementById('editGalleryUpload');
     const files = fileInput.files;
     if(!files || files.length===0) return;
     const p = allProducts.find(x => x.id===currentEditId);
     let gallery = [...(p.gallery_images || [])];
 
+    let hadError = false;
+    let i = 0;
     for(const file of files){
-      const fileName = `gallery_${Date.now()}_${file.name}`;
+      const fileName = `gallery_${Date.now()}_${i}_${file.name}`;
+      i++;
       const fileBuffer = await file.arrayBuffer();
       const { error } = await sb.storage.from('product-images').upload(fileName, fileBuffer, { contentType: file.type || 'image/jpeg' });
-      if(!error){
+      if(error){
+        hadError = true;
+        showMsg('galleryMsg', 'خطا در آپلود ' + file.name + ': ' + error.message, false);
+      } else {
         const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
         gallery.push(urlData.publicUrl);
       }
@@ -1321,12 +1327,16 @@ logDeviceInfo();
 
     const { error: updateError } = await sb.from('products').update({ gallery_images: gallery }).eq('id', currentEditId);
     fileInput.value = '';
-    if(!updateError){
-      await loadProducts();
-      const updated = allProducts.find(x => x.id===currentEditId);
-      renderEditGallery(updated ? updated.gallery_images || [] : []);
+    if(updateError){
+      showMsg('galleryMsg', 'خطا در ذخیره: ' + updateError.message, false);
+    } else if(!hadError){
+      showMsg('galleryMsg', 'عکس‌ها اضافه شدن ✅', true);
     }
+    await loadProducts();
+    const updated = allProducts.find(x => x.id===currentEditId);
+    renderEditGallery(updated ? updated.gallery_images || [] : []);
   }
+
 
   async function removeGalleryImage(index){
     const p = allProducts.find(x => x.id===currentEditId);
