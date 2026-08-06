@@ -1376,6 +1376,11 @@ logDeviceInfo();
     const { error } = await sb.from('admins').update({ status: newStatus }).eq('id', id);
     if(error){ alert('خطا: ' + error.message); } else { loadAdmins(); }
   }
+  async function deleteAdmin(id){
+    if(!confirm('این ادمین کامل از لیست حذف بشه؟ (حساب لاگینش هنوز می‌مونه، فقط دیگه ادمین نیست)')) return;
+    const { error } = await sb.from('admins').delete().eq('id', id);
+    if(error){ alert('خطا: ' + error.message); } else { loadAdmins(); }
+  }
 
   async function createAdmin(){
     const email = document.getElementById('newAdminEmail').value.trim();
