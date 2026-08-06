@@ -1222,6 +1222,51 @@ logDeviceInfo();
     document.getElementById('editOverlay').classList.remove('open');
     currentEditId = null;
   }
+  async function saveMainFields(){
+    const name = document.getElementById('editName').value.trim();
+    const code = document.getElementById('editCode').value.trim();
+    const price = document.getElementById('editPrice').value.replace(/[^0-9]/g, '');
+    const category = document.getElementById('editCat').value.trim();
+    const description = document.getElementById('editDescription').value.trim();
+    const fileInput = document.getElementById('editMainImage');
+    const file = fileInput.files[0];
+
+    if(!name || !price || !category){
+      showMsg('editMainMsg', 'اسم، قیمت و دسته‌بندی را پر کن', false);
+      return;
+    }
+
+    const updateData = {
+      name, code: code || null, price: parseInt(price), category,
+      description: description || null
+    };
+
+    if(file){
+      const fileName = `${Date.now()}_${file.name}`;
+      const fileBuffer = await file.arrayBuffer();
+      const { error: uploadError } = await sb.storage
+        .from('product-images')
+        .upload(fileName, fileBuffer, { contentType: file.type || 'image/jpeg' });
+
+      if(uploadError){
+        showMsg('editMainMsg', 'خطا در آپلود عکس: ' + uploadError.message, false);
+        return;
+      }
+      const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
+      updateData.image_url = urlData.publicUrl;
+    }
+
+    const { error } = await sb.from('products').update(updateData).eq('id', currentEditId);
+    if(error){
+      showMsg('editMainMsg', 'خطا: ' + error.message, false);
+    } else {
+      showMsg('editMainMsg', 'ذخیره شد ✅', true);
+      fileInput.value = '';
+      loadProducts();
+    }
+  }
+
+  async function saveVariants(){
 
   async function saveVariants(){
     const label = document.getElementById('editVariantLabel').value.trim();
