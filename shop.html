@@ -144,16 +144,20 @@
     display:flex; flex-direction:column;
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .card:active{ transform:scale(0.98); box-shadow:0 1px 4px rgba(46,31,60,0.08); }
-  .thumb{
+  .card:active{ transform:scale(0.98); box-shadow:0 1px 4px rgba(
+  .thumb img{ border-radius:10px; }
+.thumb{
     aspect-ratio:1/1;
+    height:0;
+    padding-bottom:100%;
     display:flex; align-items:center; justify-content:center;
     font-size:38px;
     position:relative;
-    padding:8px;
+    overflow:hidden;
     background:linear-gradient(155deg, var(--tint1), var(--tint2));
   }
-  .thumb img{ border-radius:10px; }
+  .thumb > *{ position:absolute; }
+  .thumb .heart-btn, .thumb .shopbadge, .thumb .badges-row{ position:absolute; }
 
   .thumb .shopbadge{
     position:absolute; top:8px; right:8px;
