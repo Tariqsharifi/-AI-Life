@@ -352,11 +352,12 @@
   .pd-related-row .rcard .rn{ font-size:11px; padding:6px 8px 8px; font-weight:600; }
 
   /* ---------- Product gallery + zoom ---------- */
-  .pd-gallery-viewport{ overflow:hidden; position:relative; touch-action:pan-y; }
+    .pd-gallery-viewport{ overflow-x:auto; overflow-y:hidden; position:relative; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .pd-gallery-viewport::-webkit-scrollbar{ display:none; }
 
 .pd-gallery-track{ display:flex; }
-.pd-gallery-track.animate{ transition:transform .25s ease; }
-.pd-gallery-track img{ flex:0 0 100%; width:100%; aspect-ratio:1/1; object-fit:contain; box-sizing:border-box; padding:24px; background:linear-gradient(155deg, var(--tint1), var(--tint2)); cursor:zoom-in; user-select:none; -webkit-user-drag:none; }
+.pd-gallery-track img{ flex:0 0 100%; width:100%; aspect-ratio:1/1; object-fit:contain; box-sizing:border-box; padding:24px; background:linear-gradient(155deg, var(--tint1), var(--tint2)); cursor:zoom-in; user-select:none; -webkit-user-drag:none; scroll-snap-align:start; }
+
   .pd-gallery-dots{ display:flex; justify-content:center; gap:6px; margin-top:6px; }
   .pd-gallery-dots span{ width:6px; height:6px; border-radius:50%; background:var(--line); }
   .pd-gallery-dots span.active{ background:var(--plum); width:16px; border-radius:4px; }
