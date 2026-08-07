@@ -1197,13 +1197,7 @@ function initGallery(count){
   if(!track) return;
   track.style.transform = 'translateX(0px)';
   let startX = 0, deltaX = 0, dragging = false;
-  track.ontouchstart = (e)=>{ dragging = true; startX = e.touches[0].clientX; track.classList.remove('animate'); };
-  track.ontouchmove = (e)=>{
-    if(!dragging) return;
-    deltaX = e.touches[0].clientX - startX;
-    track.style.transform = `translateX(${-galleryIndex * track.clientWidth + deltaX}px)`;
-  };
-  track.ontouchend = ()=>{
+  const endDrag = ()=>{
     if(!dragging) return;
     dragging = false;
     track.classList.add('animate');
@@ -1212,7 +1206,20 @@ function initGallery(count){
     deltaX = 0;
     updateGalleryPosition();
   };
+  track.ontouchstart = (e)=>{ dragging = true; startX = e.touches[0].clientX; track.classList.remove('animate'); };
+  track.ontouchmove = (e)=>{
+    if(!dragging) return;
+    deltaX = e.touches[0].clientX - startX;
+    const width = track.clientWidth;
+    const minDelta = galleryIndex >= galleryCount - 1 ? 0 : -width;
+    const maxDelta = galleryIndex <= 0 ? 0 : width;
+    const clamped = Math.max(minDelta, Math.min(maxDelta, deltaX));
+    track.style.transform = `translateX(${-galleryIndex * width + clamped}px)`;
+  };
+  track.ontouchend = endDrag;
+  track.ontouchcancel = endDrag;
 }
+
 function updateGalleryPosition(){
   const track = document.getElementById('pdGalleryTrack');
   if(!track) return;
