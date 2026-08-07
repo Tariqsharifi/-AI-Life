@@ -359,7 +359,8 @@
   .pd-gallery-dots span.active{ background:var(--plum); width:16px; border-radius:4px; }
   .zoom-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:400; display:none; align-items:center; justify-content:center; }
   .zoom-overlay.open{ display:flex; }
-  .zoom-overlay img{ max-width:94%; max-height:80vh; transition:transform .2s ease; transform:scale(1); }
+  .zoom-overlay img{ max-width:94%; max-height:80vh; object-fit:contain; transition:max-width .2s ease, max-height .2s ease; }
+  .zoom-overlay img.zoomed{ max-width:100%; max-height:100vh; }
   .zoom-overlay img.zoomed{ transform:scale(2); }
   .zoom-close{ position:absolute; top:16px; left:16px; background:rgba(255,255,255,0.15); color:#fff; border:none; width:36px; height:36px; border-radius:50%; font-size:18px; }
   .zoom-hint{ position:absolute; bottom:20px; color:rgba(255,255,255,0.7); font-size:12px; }
