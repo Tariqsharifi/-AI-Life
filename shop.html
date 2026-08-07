@@ -1183,8 +1183,9 @@ function openProductDetail(id){
   document.title = p.name + ' | بازارچه';
   loadComments(p.id);
 
-  const track = document.getElementById('pdGalleryTrack');
+   const track = document.getElementById('pdGalleryTrack');
   const dots = document.getElementById('pdGalleryDots');
+  if(track){ track.scrollLeft = 0; }
   if(track && dots){
     track.addEventListener('scroll', ()=>{
       const idx = Math.round(track.scrollLeft / track.clientWidth);
