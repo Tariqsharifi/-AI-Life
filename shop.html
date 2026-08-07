@@ -1117,7 +1117,8 @@ function openProductDetail(id){
   const galleryImages = [p.img, ...(p.gallery||[])].filter(Boolean);
   const galleryHtml = galleryImages.length > 0
     ? `
-      <div class="pd-gallery-track" id="pdGalleryTrack">
+    <div class="pd-gallery-track" id="pdGalleryTrack" dir="ltr">
+
         ${galleryImages.map(url => `<img src="${url}" onclick="openZoom('${url}')">`).join('')}
       </div>
       ${galleryImages.length > 1 ? `<div class="pd-gallery-dots" id="pdGalleryDots">${galleryImages.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div>` : ''}
