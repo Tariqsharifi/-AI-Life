@@ -1187,16 +1187,45 @@ function openProductDetail(id){
   document.title = p.name + ' | بازارچه';
   loadComments(p.id);
 
-   const track = document.getElementById('pdGalleryTrack');
-  const dots = document.getElementById('pdGalleryDots');
-  if(track){ track.scrollLeft = 0; }
-  if(track && dots){
-    track.addEventListener('scroll', ()=>{
-      const idx = Math.round(track.scrollLeft / track.clientWidth);
-      dots.querySelectorAll('span').forEach((d,i)=> d.classList.toggle('active', i===idx));
-    });
-  }
+     initGallery(galleryImages.length);
 }
+
+let galleryIndex = 0, galleryCount = 0;
+function initGallery(count){
+  galleryIndex = 0;
+  galleryCount = count;
+  const track = document.getElementById('pdGalleryTrack');
+  if(!track) return;
+  track.style.transform = 'translateX(0px)';
+  let startX = 0, deltaX = 0, dragging = false;
+  track.ontouchstart = (e)=>{ dragging = true; startX = e.touches[0].clientX; track.classList.remove('animate'); };
+  track.ontouchmove = (e)=>{
+    if(!dragging) return;
+    deltaX = e.touches[0].clientX - startX;
+    track.style.transform = `translateX(${-galleryIndex * track.clientWidth + deltaX}px)`;
+  };
+  track.ontouchend = ()=>{
+    if(!dragging) return;
+    dragging = false;
+    track.classList.add('animate');
+    if(deltaX < -50 && galleryIndex < galleryCount - 1) galleryIndex++;
+    else if(deltaX > 50 && galleryIndex > 0) galleryIndex--;
+    deltaX = 0;
+    updateGalleryPosition();
+  };
+}
+function updateGalleryPosition(){
+  const track = document.getElementById('pdGalleryTrack');
+  if(!track) return;
+  track.classList.add('animate');
+  track.style.transform = `translateX(${-galleryIndex * track.clientWidth}px)`;
+  document.querySelectorAll('#pdGalleryDots span').forEach((d,i)=> d.classList.toggle('active', i===galleryIndex));
+}
+function goToSlide(i){
+  galleryIndex = i;
+  updateGalleryPosition();
+}
+
 
 function selectVariant(productId, name){
   currentVariantSelection = name;
