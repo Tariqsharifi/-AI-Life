@@ -1197,29 +1197,61 @@ function initGallery(count){
   galleryCount = count;
   const track = document.getElementById('pdGalleryTrack');
   if(!track) return;
+  track.classList.remove('animate');
   track.style.transform = 'translateX(0px)';
-  let startX = 0, deltaX = 0, dragging = false;
+
+  let startX = 0, startY = 0, deltaX = 0, dragging = false, axisLocked = null;
+
   const endDrag = ()=>{
     if(!dragging) return;
     dragging = false;
+    axisLocked = null;
     track.classList.add('animate');
     if(deltaX < -50 && galleryIndex < galleryCount - 1) galleryIndex++;
     else if(deltaX > 50 && galleryIndex > 0) galleryIndex--;
     deltaX = 0;
     updateGalleryPosition();
   };
-  track.ontouchstart = (e)=>{ dragging = true; startX = e.touches[0].clientX; track.classList.remove('animate'); };
+
+  track.ontouchstart = (e)=>{
+    dragging = true;
+    axisLocked = null;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    deltaX = 0;
+    track.classList.remove('animate');
+  };
+
   track.ontouchmove = (e)=>{
     if(!dragging) return;
-    deltaX = e.touches[0].clientX - startX;
+    const curX = e.touches[0].clientX;
+    const curY = e.touches[0].clientY;
+    const dx = curX - startX;
+    const dy = curY - startY;
+
+    if(axisLocked === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)){
+      axisLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if(axisLocked === 'y'){
+      dragging = false;
+      track.classList.add('animate');
+      track.style.transform = `translateX(${-galleryIndex * track.clientWidth}px)`;
+      return;
+    }
+    if(axisLocked === 'x') e.preventDefault();
+
+    deltaX = dx;
     const width = track.clientWidth;
     const minDelta = galleryIndex >= galleryCount - 1 ? 0 : -width;
     const maxDelta = galleryIndex <= 0 ? 0 : width;
     const clamped = Math.max(minDelta, Math.min(maxDelta, deltaX));
     track.style.transform = `translateX(${-galleryIndex * width + clamped}px)`;
   };
+
   track.ontouchend = endDrag;
   track.ontouchcancel = endDrag;
+}
+
 }
 
 function updateGalleryPosition(){
