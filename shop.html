@@ -583,6 +583,9 @@
 <!-- Order channel picker -->
 <div class="channel-overlay" id="channelOverlay" onclick="if(event.target===this) closeChannelPicker()">
   <div class="channel-sheet">
+    <div class="ct">اطلاعات تماس</div>
+    <input type="text" id="customerNameInput" placeholder="اسمت" style="width:100%;margin-bottom:8px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-family:'Vazirmatn';font-size:13px;direction:rtl;">
+    <input type="tel" id="customerPhoneInput" placeholder="شماره موبایلت" style="width:100%;margin-bottom:14px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-family:'Vazirmatn';font-size:13px;direction:ltr;text-align:right;">
     <div class="ct">سفارش رو از کدوم کانال ارسال کنم؟</div>
     <button class="channel-tg" onclick="selectChannel('telegram')">ارسال در تلگرام</button>
     <button class="channel-wa" onclick="selectChannel('whatsapp')">ارسال در واتساپ</button>
