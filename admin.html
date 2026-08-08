@@ -1667,7 +1667,47 @@ logDeviceInfo();
       showMsg('backupMsg', 'بکاپ دانلود شد ✅', true);
   }
 
-  /* ---------- Admin management ---------- */
+    async function restoreBackup(){
+    const fileInput = document.getElementById('restoreFile');
+    const file = fileInput.files[0];
+    if(!file){
+      showMsg('restoreMsg', 'یک فایل بکاپ انتخاب کن', false);
+      return;
+    }
+    if(!confirm('اطلاعات فایل بکاپ با اطلاعات فعلی ترکیب می‌شه. مطمئنی؟')) return;
+
+    showMsg('restoreMsg', 'در حال بازگردانی...', true);
+
+    try{
+      const text = await file.text();
+      const backup = JSON.parse(text);
+      const tables = ['products','product_ratings','coupons','comments','orders','banners','settings','blog_posts','faqs','custom_pages','forms','form_submissions'];
+      const conflictKeys = { settings: 'key' };
+      let errors = [];
+
+      for(const t of tables){
+        const rows = backup[t];
+        if(!Array.isArray(rows) || rows.length===0) continue;
+        const { error } = await sb.from(t).upsert(rows, { onConflict: conflictKeys[t] || 'id' });
+        if(error) errors.push(t + ': ' + error.message);
+      }
+
+      if(errors.length > 0){
+        showMsg('restoreMsg', 'بازگردانی با خطا: ' + errors.join(' | '), false);
+      } else {
+        showMsg('restoreMsg', 'بازگردانی با موفقیت انجام شد ✅', true);
+        fileInput.value = '';
+        loadDashboard();
+        loadProducts();
+        loadOrders();
+        loadCustomers();
+      }
+    } catch(err){
+      showMsg('restoreMsg', 'فایل بکاپ معتبر نیست: ' + err.message, false);
+    }
+  }
+
+
   let currentUserEmail = null;
   let isOwnerAdmin = false;
 
