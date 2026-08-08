@@ -859,7 +859,8 @@ function quickOrderFromCard(id){
 function buildOrderMessage(p, variantName){
   const codeText = p.code ? ` (کد: ${p.code})` : '';
   const variantText = variantName ? ` - ${p.variantLabel || 'گزینه'}: ${variantName}` : '';
-  return `سلام، می‌خوام این محصول رو سفارش بدم: ${p.name}${codeText}${variantText}`;
+  const cardLine = cardPaymentInfo ? `\n\n${cardPaymentInfo}` : '';
+  return `سلام، می‌خوام این محصول رو سفارش بدم: ${p.name}${codeText}${variantText}${cardLine}`;
 }
 
 function orderProduct(id, variantName){
