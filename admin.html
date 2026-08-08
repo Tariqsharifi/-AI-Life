@@ -611,17 +611,29 @@ logDeviceInfo();
     `).join('');
   }
 
+    let showOutOfStockOnly = false;
+
+  function toggleOutOfStockFilter(){
+    showOutOfStockOnly = !showOutOfStockOnly;
+    const btn = document.getElementById('outOfStockToggle');
+    btn.textContent = showOutOfStockOnly ? 'نمایش همه محصولات' : 'نمایش فقط ناموجودها';
+    filterAdminList();
+  }
+
   function filterAdminList(){
     const q = document.getElementById('searchAdmin').value.trim();
-    if(!q){
-      renderAdminList(allProducts);
-      return;
+    let filtered = allProducts;
+    if(q){
+      filtered = filtered.filter(p =>
+        p.name.includes(q) || p.category.includes(q) || (p.shop_name||'').includes(q) || (p.code||'').toLowerCase().includes(q.toLowerCase())
+      );
     }
-    const filtered = allProducts.filter(p =>
-      p.name.includes(q) || p.category.includes(q) || (p.shop_name||'').includes(q) || (p.code||'').toLowerCase().includes(q.toLowerCase())
-    );
+    if(showOutOfStockOnly){
+      filtered = filtered.filter(p => p.in_stock===false);
+    }
     renderAdminList(filtered);
   }
+
 
   async function toggleStock(id, newStatus){
     const { error } = await sb.from('products').update({ in_stock: newStatus }).eq('id', id);
