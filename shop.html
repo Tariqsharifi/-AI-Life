@@ -722,6 +722,10 @@ async function loadShippingNote(){
   const { data, error } = await sb.from('settings').select('value').eq('key', 'shipping_note').maybeSingle();
   shippingNote = (!error && data) ? data.value : '';
 }
+async function loadCardPaymentInfo(){
+  const { data, error } = await sb.from('settings').select('value').eq('key', 'card_payment_info').maybeSingle();
+  cardPaymentInfo = (!error && data) ? data.value : '';
+}
 
 const chipRow = document.getElementById('chipRow');
 const grid = document.getElementById('grid');
