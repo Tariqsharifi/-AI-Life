@@ -200,6 +200,8 @@
     <div class="box">
       <h2>گزارش فروش</h2>
       <div class="subtitle">سفارش‌هایی که مشتری از دکمه «سفارش» ثبت کرده (لزوماً به معنی پرداخت‌شده نیست)</div>
+            <label>جستجو (اسم، شماره تماس، شماره سفارش یا نام محصول)</label>
+      <input type="text" id="orderSearchInput" placeholder="مثلاً علی یا 0912..." oninput="filterOrdersDisplay()">
       <div class="date-filters">
         <div>
           <label>از تاریخ</label>
@@ -210,6 +212,7 @@
           <input type="date" id="orderTo">
         </div>
       </div>
+
             <label>وضعیت</label>
       <select id="orderStatusFilter" onchange="loadOrders()">
         <option value="">همه وضعیت‌ها</option>
