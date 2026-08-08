@@ -549,10 +549,68 @@ async function clearAllLoginLogs(){
       statCard('تعداد سفارش‌ها', (orderCount || 0).toLocaleString('fa-IR')) +
       statCard('فروش امروز', todaySales.toLocaleString('fa-IR') + ' تومان') +
       statCard('فروش این ماه', monthSales.toLocaleString('fa-IR') + ' تومان') +
-      statCard('سود امروز', todayProfit.toLocaleString('fa-IR') + ' تومان') +
+            statCard('سود امروز', todayProfit.toLocaleString('fa-IR') + ' تومان') +
       statCard('سود این ماه', monthProfit.toLocaleString('fa-IR') + ' تومان') +
       statCard('تعداد نظرات', (commentCount || 0).toLocaleString('fa-IR'));
   }
+
+  let allCustomersData = [];
+
+  async function loadCustomers(){
+    const list = document.getElementById('customerList');
+    list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">در حال بارگذاری...</div>';
+
+    const { data, error } = await sb.from('orders')
+      .select('customer_name, customer_phone, total, created_at')
+      .order('created_at', { ascending: true });
+
+    if(error || !data || data.length===0){
+      list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">هنوز مشتری‌ای ثبت نشده</div>';
+      allCustomersData = [];
+      return;
+    }
+
+    const map = {};
+    data.forEach(o => {
+      const phone = o.customer_phone || 'نامشخص';
+      if(!map[phone]){
+        map[phone] = { name: o.customer_name || '', phone, count: 0, total: 0, last: o.created_at };
+      }
+      map[phone].count += 1;
+      map[phone].total += Number(o.total || 0);
+      if(o.customer_name) map[phone].name = o.customer_name;
+      if(new Date(o.created_at) > new Date(map[phone].last)) map[phone].last = o.created_at;
+    });
+
+    allCustomersData = Object.values(map).sort((a, b) => b.total - a.total);
+    renderCustomerList(allCustomersData);
+  }
+
+  function filterCustomers(){
+    const q = document.getElementById('customerSearchInput').value.trim().toLowerCase();
+    let filtered = allCustomersData;
+    if(q){
+      filtered = allCustomersData.filter(c =>
+        (c.name || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
+      );
+    }
+    renderCustomerList(filtered);
+  }
+
+  function renderCustomerList(list){
+    const container = document.getElementById('customerList');
+    if(!list || list.length===0){
+      container.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">مشتری‌ای پیدا نشد</div>';
+      return;
+    }
+    container.innerHTML = list.map(c => `
+      <div class="prow" style="flex-direction:column; align-items:flex-start; gap:4px;">
+        <div style="font-weight:800; font-size:13.5px;">${c.name || 'بدون نام'} ${c.phone!=='نامشخص' ? '· '+c.phone : ''}</div>
+        <div style="font-size:12px; color:rgba(39,27,30,0.6);">تعداد خرید: ${c.count.toLocaleString('fa-IR')} · مجموع خرید: ${c.total.toLocaleString('fa-IR')} تومان · آخرین خرید: ${new Date(c.last).toLocaleDateString('fa-IR')}</div>
+      </div>
+    `).join('');
+  }
+
 
     async function checkSession(){
     const { data } = await sb.auth.getSession();
