@@ -491,23 +491,43 @@ async function clearAllLoginLogs(){
     badge.textContent = `${count.toLocaleString('fa-IR')} سفارش جدید`;
     badge.style.display = 'inline-block';
   }
-  async function loadDashboard(){
+    async function loadDashboard(){
     const box = document.getElementById('dashboardStats');
     box.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">در حال بارگذاری آمار...</div>';
 
     const { count: productCount } = await sb.from('products').select('*', { count: 'exact', head: true });
     const { count: orderCount } = await sb.from('orders').select('*', { count: 'exact', head: true });
     const { count: commentCount } = await sb.from('comments').select('*', { count: 'exact', head: true });
+    const { data: costData } = await sb.from('products').select('name, code, cost_price');
+
+    const costMap = {};
+    (costData || []).forEach(p => {
+      const c = Number(p.cost_price) || 0;
+      if(p.code) costMap['code:' + p.code] = c;
+      costMap['name:' + p.name] = c;
+    });
+
+    function itemsProfit(items){
+      if(!Array.isArray(items)) return 0;
+      return items.reduce((sum, it) => {
+        let cost = 0;
+        if(it.code && costMap['code:' + it.code] !== undefined) cost = costMap['code:' + it.code];
+        else if(costMap['name:' + it.name] !== undefined) cost = costMap['name:' + it.name];
+        return sum + ((Number(it.price) || 0) - cost) * (Number(it.qty) || 0);
+      }, 0);
+    }
 
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-    const { data: todayOrders } = await sb.from('orders').select('total').gte('created_at', todayStart);
-    const { data: monthOrders } = await sb.from('orders').select('total').gte('created_at', monthStart);
+    const { data: todayOrders } = await sb.from('orders').select('total, items').gte('created_at', todayStart);
+    const { data: monthOrders } = await sb.from('orders').select('total, items').gte('created_at', monthStart);
 
     const todaySales = (todayOrders || []).reduce((sum, o) => sum + Number(o.total || 0), 0);
     const monthSales = (monthOrders || []).reduce((sum, o) => sum + Number(o.total || 0), 0);
+    const todayProfit = (todayOrders || []).reduce((sum, o) => sum + itemsProfit(o.items), 0);
+    const monthProfit = (monthOrders || []).reduce((sum, o) => sum + itemsProfit(o.items), 0);
 
     const statCard = (label, value) => `
       <div style="background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center;">
@@ -521,6 +541,8 @@ async function clearAllLoginLogs(){
       statCard('تعداد سفارش‌ها', (orderCount || 0).toLocaleString('fa-IR')) +
       statCard('فروش امروز', todaySales.toLocaleString('fa-IR') + ' تومان') +
       statCard('فروش این ماه', monthSales.toLocaleString('fa-IR') + ' تومان') +
+      statCard('سود امروز', todayProfit.toLocaleString('fa-IR') + ' تومان') +
+      statCard('سود این ماه', monthProfit.toLocaleString('fa-IR') + ' تومان') +
       statCard('تعداد نظرات', (commentCount || 0).toLocaleString('fa-IR'));
   }
 
