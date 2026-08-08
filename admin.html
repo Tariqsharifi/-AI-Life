@@ -148,8 +148,10 @@
 
     <div class="box">
       <h2>محصولات موجود</h2>
-      <input type="text" id="searchAdmin" placeholder="جستجوی محصول برای حذف یا تغییر موجودی..." oninput="filterAdminList()" style="margin-bottom:12px;">
+          <input type="text" id="searchAdmin" placeholder="جستجوی محصول برای حذف یا تغییر موجودی..." oninput="filterAdminList()" style="margin-bottom:12px;">
+      <button class="btn-secondary btn-small" id="outOfStockToggle" onclick="toggleOutOfStockFilter()" style="margin-bottom:12px;">نمایش فقط ناموجودها</button>
       <div class="plist" id="plist"></div>
+
       <button class="btn-secondary" onclick="exportProductsExcel()">خروجی Excel محصولات</button>
     </div>
 
