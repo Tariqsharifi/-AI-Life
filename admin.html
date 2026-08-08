@@ -229,11 +229,19 @@
       <div class="report-summary" id="orderSummary" style="margin-top:14px;"></div>
       <div class="plist" id="orderList"></div>
 
-      <button class="btn-secondary" onclick="exportOrdersExcel()">خروجی Excel سفارش‌ها</button>
+            <button class="btn-secondary" onclick="exportOrdersExcel()">خروجی Excel سفارش‌ها</button>
+    </div>
+
+    <div class="box">
+      <h2>مشتری‌ها</h2>
+      <div class="subtitle">بر اساس شماره تماس ثبت‌شده در سفارش‌ها جمع‌بندی شده</div>
+      <input type="text" id="customerSearchInput" placeholder="جستجو با اسم یا شماره..." oninput="filterCustomers()">
+      <div class="plist" id="customerList"></div>
     </div>
 
     <div class="box">
       <h2>مدیریت نظرات</h2>
+
       <div class="subtitle">نظرات جدید اول در وضعیت «در انتظار» هستن، باید تاییدشون کنی تا رو سایت دیده بشن</div>
       <div class="plist" id="commentAdminList"></div>
     </div>
