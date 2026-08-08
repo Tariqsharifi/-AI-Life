@@ -1240,15 +1240,15 @@ logDeviceInfo();
     }).join('');
   }
 
-  async function updateOrderStatus(id, newStatus){
+    async function updateOrderStatus(id, newStatus){
     const { error } = await sb.from('orders').update({ status: newStatus }).eq('id', id);
     if(error){
       alert('خطا: ' + error.message);
     } else {
       loadOrders();
+      checkNewOrders();
     }
   }
-
 
   async function deleteOrder(id){
     if(!confirm('این سفارش از گزارش حذف بشه؟')) return;
