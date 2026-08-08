@@ -894,9 +894,13 @@ async function recordOrder(items, total, coupon){
 
 /* ---------- Order channel picker (Telegram / WhatsApp) ---------- */
 let pendingOrder = null;
+let lastCustomerName = '';
+let lastCustomerPhone = '';
 
 function requestOrder(payload){
   pendingOrder = payload;
+  document.getElementById('customerNameInput').value = localStorage.getItem('bazarcheh_customer_name') || '';
+  document.getElementById('customerPhoneInput').value = localStorage.getItem('bazarcheh_customer_phone') || '';
   document.getElementById('channelOverlay').classList.add('open');
 }
 
@@ -907,7 +911,19 @@ function closeChannelPicker(){
 
 function selectChannel(channel){
   if(!pendingOrder) return;
-  const encoded = encodeURIComponent(pendingOrder.message);
+  const name = document.getElementById('customerNameInput').value.trim();
+  const phone = document.getElementById('customerPhoneInput').value.trim();
+  if(!name || !phone){
+    alert('لطفاً اسم و شماره تماس رو وارد کن');
+    return;
+  }
+  localStorage.setItem('bazarcheh_customer_name', name);
+  localStorage.setItem('bazarcheh_customer_phone', phone);
+  lastCustomerName = name;
+  lastCustomerPhone = phone;
+
+  const fullMessage = `${pendingOrder.message}\n\nاسم: ${name}\nشماره تماس: ${phone}`;
+  const encoded = encodeURIComponent(fullMessage);
   document.getElementById('channelOverlay').classList.remove('open');
   if(channel === 'telegram'){
     window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${encoded}`, '_blank');
@@ -917,6 +933,7 @@ function selectChannel(channel){
   if(pendingOrder.onSent) pendingOrder.onSent();
   pendingOrder = null;
 }
+
 
 /* ---------- Wishlist ---------- */
 function saveWishlist(){ localStorage.setItem('bazarcheh_wishlist', JSON.stringify(wishlist)); }
