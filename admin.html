@@ -617,10 +617,10 @@ async function clearAllLoginLogs(){
     if(data.session){
       document.getElementById('loginBox').classList.remove('show');
             document.getElementById('panelBox').classList.add('show');
-      checkNewOrders();
+            checkNewOrders();
       loadDashboard();
+      loadCustomers();
       loadProducts();
-
       loadCoupons();
       loadCommentsAdmin();
       loadBanners();
