@@ -675,7 +675,8 @@ logDeviceInfo();
         <img src="${p.image_url || ''}" onerror="this.style.background='#eee'; this.src='';">
         <div class="pinfo">
           <div class="pname">${p.name} ${p.code ? `<span style="color:#D4A017;font-size:11px;">[${p.code}]</span>` : ''} ${p.in_stock===false ? '<span style="color:#A32638;font-size:11px;">(ناموجود)</span>' : ''} ${p.discount_percent>0 ? `<span style="color:#A32638;font-size:11px;">(${p.discount_percent}٪ تخفیف)</span>` : ''} ${(p.variants && p.variants.length>0) ? '<span style="color:#2E1F3C;font-size:11px;">(دارای گزینه)</span>' : ''} ${(p.gallery_images && p.gallery_images.length>0) ? `<span style="color:#2E1F3C;font-size:11px;">(${p.gallery_images.length} عکس گالری)</span>` : ''}</div>
-          <div class="pmeta">${p.category} · ${Number(p.price).toLocaleString('fa-IR')} تومان · سفارش: ${p.order_count||0}</div>
+                  <div class="pmeta">${p.category} · ${Number(p.price).toLocaleString('fa-IR')} تومان · سفارش: ${p.order_count||0}${p.cost_price>0 ? ` · سود واحد: ${(Number(p.price)-Number(p.cost_price)).toLocaleString('fa-IR')} تومان` : ''}</div>
+
         </div>
         <div class="pactions">
           <button class="btn-secondary btn-small" onclick="openEditModal('${p.id}')">ویرایش پیشرفته</button>
