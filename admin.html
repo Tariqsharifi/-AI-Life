@@ -1163,12 +1163,29 @@ logDeviceInfo();
   /* ---------- Orders / sales report ---------- */
   let allOrders = [];
 
+    const orderStatusLabels = {
+    new: 'سفارش جدید',
+    preparing: 'در حال آماده‌سازی',
+    shipped: 'ارسال شده',
+    delivered: 'تحویل داده شده',
+    cancelled: 'لغو شده'
+  };
+  const orderStatusColors = {
+    new: '#D4A017',
+    preparing: '#2E1F3C',
+    shipped: '#1E6FA8',
+    delivered: '#2A6B3B',
+    cancelled: '#A32638'
+  };
+
   async function loadOrders(){
     let query = sb.from('orders').select('*').order('created_at', {ascending:false});
     const from = document.getElementById('orderFrom').value;
     const to = document.getElementById('orderTo').value;
+    const statusFilter = document.getElementById('orderStatusFilter').value;
     if(from) query = query.gte('created_at', from + 'T00:00:00');
     if(to) query = query.lte('created_at', to + 'T23:59:59');
+    if(statusFilter) query = query.eq('status', statusFilter);
 
     const { data, error } = await query;
     const list = document.getElementById('orderList');
@@ -1189,6 +1206,7 @@ logDeviceInfo();
       const itemsText = Array.isArray(o.items)
         ? o.items.map(it => `${it.name}${it.variant ? ' ('+it.variant+')' : ''} × ${it.qty}`).join('، ')
         : '';
+      const st = o.status || 'new';
       return `
         <div class="order-item">
           <div class="o-top">
@@ -1197,11 +1215,27 @@ logDeviceInfo();
           </div>
           <div class="o-items">${itemsText}</div>
           ${o.coupon_code ? `<div class="o-coupon">کد تخفیف: ${o.coupon_code} (${o.discount_percent}٪)</div>` : ''}
+          <div style="margin-top:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span style="background:${orderStatusColors[st]}; color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px;">${orderStatusLabels[st]}</span>
+            <select onchange="updateOrderStatus('${o.id}', this.value)" style="width:auto; margin:0; padding:6px 8px; font-size:12px;">
+              ${Object.keys(orderStatusLabels).map(key => `<option value="${key}" ${key===st?'selected':''}>${orderStatusLabels[key]}</option>`).join('')}
+            </select>
+          </div>
           <button class="btn-danger" style="margin-top:8px;" onclick="deleteOrder('${o.id}')">حذف سفارش</button>
         </div>
       `;
     }).join('');
   }
+
+  async function updateOrderStatus(id, newStatus){
+    const { error } = await sb.from('orders').update({ status: newStatus }).eq('id', id);
+    if(error){
+      alert('خطا: ' + error.message);
+    } else {
+      loadOrders();
+    }
+  }
+
 
   async function deleteOrder(id){
     if(!confirm('این سفارش از گزارش حذف بشه؟')) return;
