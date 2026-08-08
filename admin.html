@@ -1233,7 +1233,7 @@ logDeviceInfo();
     cancelled: '#A32638'
   };
 
-  async function loadOrders(){
+    async function loadOrders(){
     let query = sb.from('orders').select('*').order('created_at', {ascending:false});
     const from = document.getElementById('orderFrom').value;
     const to = document.getElementById('orderTo').value;
@@ -1243,17 +1243,35 @@ logDeviceInfo();
     if(statusFilter) query = query.eq('status', statusFilter);
 
     const { data, error } = await query;
+    allOrders = (error || !data) ? [] : data;
+    filterOrdersDisplay();
+  }
+
+  function filterOrdersDisplay(){
+    const q = document.getElementById('orderSearchInput').value.trim().toLowerCase();
+    let filtered = allOrders;
+    if(q){
+      filtered = allOrders.filter(o => {
+        const itemsText = Array.isArray(o.items) ? o.items.map(it => it.name).join(' ').toLowerCase() : '';
+        return (o.customer_name||'').toLowerCase().includes(q)
+          || (o.customer_phone||'').toLowerCase().includes(q)
+          || o.id.toLowerCase().includes(q)
+          || itemsText.includes(q);
+      });
+    }
+    renderOrderList(filtered);
+  }
+
+  function renderOrderList(data){
     const list = document.getElementById('orderList');
     const summary = document.getElementById('orderSummary');
 
-    if(error || !data || data.length===0){
+    if(!data || data.length===0){
       list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">سفارشی پیدا نشد</div>';
       summary.innerHTML = '<span>تعداد: 0</span><span>جمع کل: 0 تومان</span>';
-      allOrders = [];
       return;
     }
 
-    allOrders = data;
     const totalSum = data.reduce((sum, o) => sum + Number(o.total || 0), 0);
     summary.innerHTML = `<span>تعداد سفارش: ${data.length}</span><span>جمع کل: ${totalSum.toLocaleString('fa-IR')} تومان</span>`;
 
@@ -1268,6 +1286,7 @@ logDeviceInfo();
             <span class="o-date">${new Date(o.created_at).toLocaleString('fa-IR')}</span>
             <span class="o-total">${Number(o.total).toLocaleString('fa-IR')} تومان</span>
           </div>
+          ${(o.customer_name || o.customer_phone) ? `<div style="font-size:12px;font-weight:700;margin-top:4px;">${o.customer_name||''} ${o.customer_phone ? '· '+o.customer_phone : ''}</div>` : ''}
           <div class="o-items">${itemsText}</div>
           ${o.coupon_code ? `<div class="o-coupon">کد تخفیف: ${o.coupon_code} (${o.discount_percent}٪)</div>` : ''}
           <div style="margin-top:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
