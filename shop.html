@@ -1112,9 +1112,11 @@ function checkoutCart(){
     total = Math.round(total * (1 - appliedCoupon.percent/100));
     discountLine = `\nکد تخفیف: ${appliedCoupon.code} (${appliedCoupon.percent}٪)`;
   }
-  const shippingLine = shippingNote ? `\n\n${shippingNote}` : '';
+    const shippingLine = shippingNote ? `\n\n${shippingNote}` : '';
+  const cardLine = cardPaymentInfo ? `\n\n${cardPaymentInfo}` : '';
 
-  const message = `سلام، می‌خوام این سفارش رو ثبت کنم:\n${lines}${discountLine}\n\nمجموع: ${fmtPrice(total)} تومان${shippingLine}`;
+  const message = `سلام، می‌خوام این سفارش رو ثبت کنم:\n${lines}${discountLine}\n\nمجموع: ${fmtPrice(total)} تومان${shippingLine}${cardLine}`;
+
 
   requestOrder({
     message,
