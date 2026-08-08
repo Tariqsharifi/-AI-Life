@@ -584,8 +584,10 @@ logDeviceInfo();
   async function addProduct(){
     const name = document.getElementById('pName').value.trim();
     const code = document.getElementById('pCode').value.trim();
-    const price = document.getElementById('pPrice').value.replace(/[^0-9]/g, '');
+       const price = document.getElementById('pPrice').value.replace(/[^0-9]/g, '');
+    const cost = document.getElementById('pCost').value.replace(/[^0-9]/g, '');
     const category = document.getElementById('pCat').value.trim();
+ 
     const shop = document.getElementById('pShop').value.trim();
     const discount = document.getElementById('pDiscount').value;
     const variantLabel = document.getElementById('pVariantLabel').value.trim();
