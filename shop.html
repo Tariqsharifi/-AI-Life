@@ -887,7 +887,9 @@ async function recordOrder(items, total, coupon){
       items: items,
       total: total,
       coupon_code: coupon ? coupon.code : null,
-      discount_percent: coupon ? coupon.percent : null
+      discount_percent: coupon ? coupon.percent : null,
+      customer_name: lastCustomerName || null,
+      customer_phone: lastCustomerPhone || null
     });
   } catch(e){}
 }
