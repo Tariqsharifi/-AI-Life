@@ -477,12 +477,14 @@ async function clearAllLoginLogs(){
     badge.style.display = 'inline-block';
   }
 
-  async function checkSession(){
+    async function checkSession(){
     const { data } = await sb.auth.getSession();
     if(data.session){
       document.getElementById('loginBox').classList.remove('show');
       document.getElementById('panelBox').classList.add('show');
+      checkNewOrders();
       loadProducts();
+
       loadCoupons();
       loadCommentsAdmin();
       loadBanners();
