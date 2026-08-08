@@ -1375,8 +1375,10 @@ logDeviceInfo();
   async function saveMainFields(){
     const name = document.getElementById('editName').value.trim();
     const code = document.getElementById('editCode').value.trim();
-    const price = document.getElementById('editPrice').value.replace(/[^0-9]/g, '');
+        const price = document.getElementById('editPrice').value.replace(/[^0-9]/g, '');
+    const cost = document.getElementById('editCost').value.replace(/[^0-9]/g, '');
     const category = document.getElementById('editCat').value.trim();
+
     const description = document.getElementById('editDescription').value.trim();
     const fileInput = document.getElementById('editMainImage');
     const file = fileInput.files[0];
