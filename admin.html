@@ -620,13 +620,14 @@ logDeviceInfo();
 
     const variants = variantsText.trim() ? parseVariantsText(variantsText) : [];
 
-    const { error } = await sb.from('products').insert({
+        const { error } = await sb.from('products').insert({
       name, code: code || null, price: parseInt(price), category,
       shop_name: shop || null, image_url: imageUrl,
       discount_percent: discount ? parseInt(discount) : 0,
       variant_label: variantLabel || null,
       variants: variants,
-      gallery_images: []
+      gallery_images: [],
+      cost_price: cost ? parseInt(cost) : 0
     });
 
     if(error){
