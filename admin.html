@@ -203,9 +203,19 @@
           <input type="date" id="orderTo">
         </div>
       </div>
+            <label>وضعیت</label>
+      <select id="orderStatusFilter" onchange="loadOrders()">
+        <option value="">همه وضعیت‌ها</option>
+        <option value="new">سفارش جدید</option>
+        <option value="preparing">در حال آماده‌سازی</option>
+        <option value="shipped">ارسال شده</option>
+        <option value="delivered">تحویل داده شده</option>
+        <option value="cancelled">لغو شده</option>
+      </select>
       <button class="btn-secondary" onclick="loadOrders()">فیلتر کن</button>
       <div class="report-summary" id="orderSummary" style="margin-top:14px;"></div>
       <div class="plist" id="orderList"></div>
+
       <button class="btn-secondary" onclick="exportOrdersExcel()">خروجی Excel سفارش‌ها</button>
     </div>
 
