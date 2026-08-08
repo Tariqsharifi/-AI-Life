@@ -1058,14 +1058,23 @@ function renderCartDrawer(){
   if(appliedCoupon) total = Math.round(total * (1 - appliedCoupon.percent/100));
   document.getElementById('cartTotal').textContent = fmtPrice(total) + ' تومان';
 
-  const noteBox = document.getElementById('shippingNoteBox');
+    const noteBox = document.getElementById('shippingNoteBox');
   if(shippingNote){
     noteBox.style.display = 'block';
     noteBox.textContent = shippingNote;
   } else {
     noteBox.style.display = 'none';
   }
+
+  const cardBox = document.getElementById('cardPaymentBox');
+  if(cardPaymentInfo){
+    cardBox.style.display = 'block';
+    cardBox.textContent = cardPaymentInfo;
+  } else {
+    cardBox.style.display = 'none';
+  }
 }
+
 
 async function applyCoupon(){
   const code = document.getElementById('couponInput').value.trim().toUpperCase();
