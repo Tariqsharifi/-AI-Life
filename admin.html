@@ -519,8 +519,9 @@ async function clearAllLoginLogs(){
     const { data } = await sb.auth.getSession();
     if(data.session){
       document.getElementById('loginBox').classList.remove('show');
-      document.getElementById('panelBox').classList.add('show');
+            document.getElementById('panelBox').classList.add('show');
       checkNewOrders();
+      loadDashboard();
       loadProducts();
 
       loadCoupons();
