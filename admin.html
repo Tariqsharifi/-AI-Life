@@ -1667,7 +1667,7 @@ logDeviceInfo();
       showMsg('backupMsg', 'بکاپ دانلود شد ✅', true);
   }
 
-    async function restoreBackup(){
+      async function restoreBackup(){
     const fileInput = document.getElementById('restoreFile');
     const file = fileInput.files[0];
     if(!file){
@@ -1683,12 +1683,15 @@ logDeviceInfo();
       const backup = JSON.parse(text);
       const tables = ['products','product_ratings','coupons','comments','orders','banners','settings','blog_posts','faqs','custom_pages','forms','form_submissions'];
       const conflictKeys = { settings: 'key' };
+      const skipUpdateTables = ['product_ratings', 'comments'];
       let errors = [];
 
       for(const t of tables){
         const rows = backup[t];
         if(!Array.isArray(rows) || rows.length===0) continue;
-        const { error } = await sb.from(t).upsert(rows, { onConflict: conflictKeys[t] || 'id' });
+        const options = { onConflict: conflictKeys[t] || 'id' };
+        if(skipUpdateTables.includes(t)) options.ignoreDuplicates = true;
+        const { error } = await sb.from(t).upsert(rows, options);
         if(error) errors.push(t + ': ' + error.message);
       }
 
