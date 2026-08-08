@@ -466,6 +466,16 @@ async function clearAllLoginLogs(){
   const { error } = await sb.from('login_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   if(error){ alert('خطا: ' + error.message); } else { loadLoginLogs(); }
 }
+  async function checkNewOrders(){
+    const { count, error } = await sb.from('orders').select('*', { count: 'exact', head: true }).or('status.is.null,status.eq.new');
+    const badge = document.getElementById('newOrdersBadge');
+    if(error || !count || count===0){
+      badge.style.display = 'none';
+      return;
+    }
+    badge.textContent = `${count.toLocaleString('fa-IR')} سفارش جدید`;
+    badge.style.display = 'inline-block';
+  }
 
   async function checkSession(){
     const { data } = await sb.auth.getSession();
