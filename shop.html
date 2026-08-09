@@ -672,7 +672,8 @@ function saveCompareList(){ localStorage.setItem('bazarcheh_compare', JSON.strin
 function updateCompareFab(){
   const fab = document.getElementById('compareFab');
   document.getElementById('compareCount').textContent = compareList.length.toLocaleString('fa-IR');
-  fab.classList.toggle('show', compareList.length >= 2);
+    fab.classList.toggle('show', compareList.length >= 1);
+
 }
 
 function toggleCompare(id){
