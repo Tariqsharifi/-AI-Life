@@ -1412,6 +1412,8 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
       const itemsText = Array.isArray(o.items)
         ? o.items.map(it => `${it.name}${it.variant ? ' ('+it.variant+')' : ''} × ${it.qty}`).join('، ')
         : '';
+            const shopContacts = getOrderShopContacts(o);
+
       const st = o.status || 'new';
       return `
         <div class="order-item">
