@@ -1883,6 +1883,81 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
     const { error } = await sb.from('admins').delete().eq('id', id);
     if(error){ alert('خطا: ' + error.message); } else { loadAdmins(); }
   }
+async function loadVendors(){
+  const { data, error } = await sb.from('vendors').select('*').order('created_at', {ascending:true});
+  const list = document.getElementById('vendorsList');
+  const form = document.getElementById('createVendorForm');
+  form.style.display = isOwnerAdmin ? 'block' : 'none';
+
+  if(error || !data){
+    list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">خطا در بارگذاری مغازه‌داران</div>';
+    return;
+  }
+  if(data.length === 0){
+    list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">هنوز مغازه‌داری ثبت نشده</div>';
+    return;
+  }
+
+  list.innerHTML = data.map(v => `
+    <div class="prow">
+      <div class="pinfo">
+        <div class="pname">${v.shop_name}</div>
+        <div class="pmeta" dir="ltr" style="text-align:right;">${v.shop_phone || ''} ${v.shop_address ? '· ' + v.shop_address : ''}</div>
+        <div class="pmeta">${v.active ? 'فعال' : 'غیرفعال'}</div>
+      </div>
+      ${isOwnerAdmin ? `<button class="btn-secondary btn-small" onclick="toggleVendorActive('${v.id}', ${v.active ? 'false' : 'true'})">${v.active ? 'غیرفعال کن' : 'فعال کن'}</button>` : ''}
+    </div>
+  `).join('');
+}
+
+async function toggleVendorActive(id, newStatus){
+  const { error } = await sb.from('vendors').update({ active: newStatus }).eq('id', id);
+  if(error){ alert('خطا: ' + error.message); } else { loadVendors(); }
+}
+
+async function createVendor(){
+  const email = document.getElementById('newVendorEmail').value.trim();
+  const password = document.getElementById('newVendorPassword').value;
+  const shopName = document.getElementById('newVendorShopName').value.trim();
+  const shopPhone = document.getElementById('newVendorShopPhone').value.trim();
+  const shopAddress = document.getElementById('newVendorShopAddress').value.trim();
+
+  if(!email || !password || password.length < 6 || !shopName){
+    showMsg('vendorMsg', 'ایمیل، رمز حداقل ۶ کاراکتری و اسم مغازه رو پر کن', false);
+    return;
+  }
+
+  const { data: { session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch('https://cmzbiyscsalzopsdydtg.supabase.co/functions/v1/create-vendor', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token
+      },
+      body: JSON.stringify({
+        email, password,
+        shopName, shopPhone: shopPhone || null, shopAddress: shopAddress || null,
+        requesterEmail: currentUserEmail
+      })
+    });
+    const result = await res.json();
+    if(!res.ok || result.error){
+      showMsg('vendorMsg', 'خطا: ' + (result.error || 'مشکلی پیش اومد'), false);
+    } else {
+      showMsg('vendorMsg', 'مغازه‌دار جدید ساخته شد ✅', true);
+      document.getElementById('newVendorEmail').value = '';
+      document.getElementById('newVendorPassword').value = '';
+      document.getElementById('newVendorShopName').value = '';
+      document.getElementById('newVendorShopPhone').value = '';
+      document.getElementById('newVendorShopAddress').value = '';
+      loadVendors();
+    }
+  } catch(err){
+    showMsg('vendorMsg', 'خطا در اتصال: ' + err.message, false);
+  }
+}
+
 
   async function createAdmin(){
     const email = document.getElementById('newAdminEmail').value.trim();
