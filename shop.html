@@ -546,6 +546,16 @@
 <div class="pd-overlay" id="pdOverlay" onclick="if(event.target===this) closeProductDetail()">
   <div class="pd-sheet" id="pdSheet"></div>
 </div>
+<!-- Compare overlay -->
+<div class="pd-overlay" id="compareOverlay" onclick="if(event.target===this) closeCompareOverlay()">
+  <div class="pd-sheet">
+    <button class="pd-close" onclick="closeCompareOverlay()">✕</button>
+    <div class="pd-body">
+      <div class="pd-name" style="margin-top:10px;">مقایسه محصولات</div>
+      <div class="compare-row" id="compareRow"></div>
+    </div>
+  </div>
+</div>
 
 <!-- Zoom overlay -->
 <div class="zoom-overlay" id="zoomOverlay" onclick="if(event.target===this) closeZoom()">
