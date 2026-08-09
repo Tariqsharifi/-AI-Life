@@ -783,6 +783,8 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
           <button class="btn-secondary btn-small" onclick="editDiscount('${p.id}', ${p.discount_percent||0})">تخفیف</button>
                     <button class="btn-secondary btn-small" onclick="toggleStock('${p.id}', ${p.in_stock===false ? 'true' : 'false'})">${p.in_stock===false ? 'موجود کن' : 'ناموجود کن'}</button>
           <button class="btn-secondary btn-small" onclick="generateProductQR('${p.id}')">QR کد</button>
+          ${p.shop_phone ? `<a class="btn-secondary btn-small" href="tel:${p.shop_phone}" style="text-decoration:none;">📞 تماس</a>` : ''}
+
           <button class="btn-danger" onclick="deleteProduct('${p.id}')">حذف</button>
 
         </div>
