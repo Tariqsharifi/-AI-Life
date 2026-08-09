@@ -722,7 +722,8 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
 
         const { error } = await sb.from('products').insert({
       name, code: code || null, price: parseInt(price), category,
-      shop_name: shop || null, image_url: imageUrl,
+    shop_name: shop || null, shop_phone: shopPhone || null, image_url: imageUrl,
+
       discount_percent: discount ? parseInt(discount) : 0,
       variant_label: variantLabel || null,
       variants: variants,
