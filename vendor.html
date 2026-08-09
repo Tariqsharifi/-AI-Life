@@ -410,6 +410,8 @@ async function submitProduct(){
     const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
     const imageUrl = urlData.publicUrl;
 
+       const productCode = await generateVendorProductCode();
+
     const { error: insertError } = await sb.from('products').insert({
       name,
       price,
@@ -418,7 +420,9 @@ async function submitProduct(){
       vendor_id: currentVendor.id,
       pending_approval: true,
       in_stock: true,
-      code: null,
+      code: productCode,
+      shop_name: currentVendor.shop_name,
+      shop_phone: currentVendor.shop_phone || null,
       discount_percent: 0,
       variant_label: null,
       variants: [],
