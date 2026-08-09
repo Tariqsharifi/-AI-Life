@@ -1414,10 +1414,80 @@ logDeviceInfo();
           <button class="btn-danger" style="margin-top:8px;" onclick="deleteOrder('${o.id}')">حذف سفارش</button>
         </div>
       `;
-    }).join('');
+       }).join('');
+  }
+
+  let salesChartInstance = null;
+
+  function renderSalesInsights(data){
+    const dailyMap = {};
+    data.forEach(o => {
+      const day = new Date(o.created_at).toLocaleDateString('fa-IR');
+      dailyMap[day] = (dailyMap[day] || 0) + Number(o.total || 0);
+    });
+    const days = Object.keys(dailyMap);
+    const chartWrap = document.getElementById('salesChartWrap');
+
+    if(typeof Chart !== 'undefined' && days.length > 1){
+      chartWrap.style.display = 'block';
+      const ctx = document.getElementById('salesChart').getContext('2d');
+      if(salesChartInstance) salesChartInstance.destroy();
+      salesChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: days,
+          datasets: [{
+            label: 'فروش (تومان)',
+            data: days.map(d => dailyMap[d]),
+            backgroundColor: '#D4A017'
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    } else {
+      chartWrap.style.display = 'none';
+    }
+
+    const productMap = {};
+    data.forEach(o => {
+      if(!Array.isArray(o.items)) return;
+      o.items.forEach(it => {
+        const key = it.name || 'نامشخص';
+        if(!productMap[key]) productMap[key] = { qty: 0, revenue: 0 };
+        productMap[key].qty += Number(it.qty) || 0;
+        productMap[key].revenue += (Number(it.price) || 0) * (Number(it.qty) || 0);
+      });
+    });
+    const productList = Object.entries(productMap).map(([name, v]) => ({ name, ...v }));
+    const topSellers = [...productList].sort((a,b) => b.qty - a.qty).slice(0, 5);
+    const lowSellers = [...productList].sort((a,b) => a.qty - b.qty).slice(0, 5);
+
+    const renderRow = (p) => `
+      <div class="prow" style="padding:8px 10px;">
+        <div class="pinfo">
+          <div class="pname" style="font-size:12.5px;">${p.name}</div>
+          <div class="pmeta">تعداد فروخته‌شده: ${p.qty.toLocaleString('fa-IR')} · درآمد: ${p.revenue.toLocaleString('fa-IR')} تومان</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('topProductsWrap').innerHTML = `
+      <div style="margin-bottom:10px;">
+        <div style="font-size:13px;font-weight:800;margin-bottom:6px;">پرفروش‌ترین محصولات</div>
+        ${topSellers.length ? topSellers.map(renderRow).join('') : '<div style="font-size:12px;color:rgba(39,27,30,0.5)">داده‌ای نیست</div>'}
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:800;margin-bottom:6px;">کم‌فروش‌ترین محصولات</div>
+        ${lowSellers.length ? lowSellers.map(renderRow).join('') : '<div style="font-size:12px;color:rgba(39,27,30,0.5)">داده‌ای نیست</div>'}
+      </div>
+    `;
   }
 
     async function updateOrderStatus(id, newStatus){
+
     const { error } = await sb.from('orders').update({ status: newStatus }).eq('id', id);
     if(error){
       alert('خطا: ' + error.message);
