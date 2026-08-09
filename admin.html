@@ -805,6 +805,7 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
 
         </div>
         <div class="pactions">
+        ${p.pending_approval ? `<button class="btn-approve" onclick="approveVendorProduct('${p.id}')">تایید کن</button>` : ''}
           <button class="btn-secondary btn-small" onclick="openEditModal('${p.id}')">ویرایش پیشرفته</button>
           <button class="btn-secondary btn-small" onclick="editDiscount('${p.id}', ${p.discount_percent||0})">تخفیف</button>
                     <button class="btn-secondary btn-small" onclick="toggleStock('${p.id}', ${p.in_stock===false ? 'true' : 'false'})">${p.in_stock===false ? 'موجود کن' : 'ناموجود کن'}</button>
