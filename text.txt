@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>پنل مغازه‌داران | بازارچه</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --paper:#FBF7F0;
+    --plum:#6B2C57;
+    --plum-dark:#4E1F40;
+    --saffron:#E8A93E;
+    --saffron-dark:#C98A22;
+    --ink:#2E2530;
+    --muted:#8A7E86;
+    --line:#EAE0D8;
+    --danger:#C0433C;
+    --success:#2E7D4F;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Vazirmatn','Tahoma',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  header{
+    background:var(--plum);
+    color:#fff;
+    padding:18px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  header h1{margin:0;font-size:18px;font-weight:700;}
+  header p{margin:4px 0 0;font-size:12px;opacity:.85;}
+  #logoutBtn{
+    position:absolute;
+    left:14px;
+    top:16px;
+    background:rgba(255,255,255,.15);
+    color:#fff;
+    border:none;
+    padding:6px 12px;
+    border-radius:10px;
+    font-size:12px;
+    display:none;
+  }
+  main{
+    max-width:480px;
+    margin:0 auto;
+    padding:16px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 2px 10px rgba(107,44,87,.06);
+  }
+  .card h2{
+    margin:0 0 14px;
+    font-size:15px;
+    color:var(--plum);
+  }
+  label{
+    display:block;
+    font-size:13px;
+    color:var(--muted);
+    margin:12px 0 6px;
+  }
+  input[type=text],input[type=password],input[type=number],select{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-size:15px;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  input:focus,select:focus{outline:2px solid var(--saffron);border-color:transparent;}
+  .file-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px;
+    border:1.5px dashed var(--line);
+    border-radius:10px;
+    background:var(--paper);
+  }
+  .file-wrap img{
+    width:52px;height:52px;border-radius:8px;object-fit:cover;display:none;
+  }
+  input[type=file]{font-size:13px;flex:1;}
+  button.primary{
+    width:100%;
+    margin-top:18px;
+    padding:14px;
+    background:var(--saffron);
+    color:var(--plum-dark);
+    border:none;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  button.primary:disabled{opacity:.6;}
+  button.primary:active{background:var(--saffron-dark);}
+  .msg{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:13px;
+    display:none;
+  }
+  .msg.error{background:#FBEAE9;color:var(--danger);display:block;}
+  .msg.success{background:#E9F5EE;color:var(--success);display:block;}
+  .vendor-info{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .vendor-info b{color:var(--ink);}
+  .product-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .product-row:last-child{border-bottom:none;}
+  .product-row img{
+    width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--paper);
+  }
+  .product-row .pname{flex:1;font-size:14px;}
+  .product-row .pprice{font-size:12px;color:var(--muted);}
+  .badge{
+    font-size:11px;
+    padding:3px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge.pending{background:#FCEFDA;color:var(--saffron-dark);}
+  .badge.approved{background:#E9F5EE;color:var(--success);}
+  .empty{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    padding:20px 0;
+  }
+  #loginScreen{display:block;}
+  #appScreen{display:none;}
+  .spinner{
+    display:inline-block;width:14px;height:14px;border:2px solid rgba(78,31,64,.3);
+    border-top-color:var(--plum-dark);border-radius:50%;animation:spin .7s linear infinite;
+    vertical-align:middle;margin-left:6px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<header>
+  <button id="logoutBtn">خروج</button>
+  <h1>پنل مغازه‌داران بازارچه</h1>
+  <p id="shopLabel">افزودن محصول جدید</p>
+</header>
+
+<main>
+
+  <!-- صفحه ورود -->
+  <div id="loginScreen">
+    <div class="card">
+      <h2>ورود</h2>
+      <label>ایمیل</label>
+      <input type="text" id="loginEmail" autocomplete="username" placeholder="مثلاً shop1@example.com">
+      <label>رمز عبور</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" placeholder="رمز عبور">
+      <button class="primary" id="loginBtn">ورود</button>
+      <div class="msg" id="loginMsg"></div>
+    </div>
+  </div>
+
+  <!-- صفحه اصلی پنل -->
+  <div id="appScreen">
+
+    <div class="card">
+      <div class="vendor-info">مغازه: <b id="vendorShopName">-</b></div>
+      <div class="vendor-info">شماره تماس ثبت‌شده: <b id="vendorShopPhone">-</b></div>
+    </div>
+
+    <div class="card">
+      <h2>افزودن محصول جدید</h2>
+
+      <label>اسم محصول</label>
+      <input type="text" id="pName" placeholder="مثلاً سطل پلاستیکی ۱۰ لیتری">
+
+      <label>قیمت (تومان)</label>
+      <input type="text" inputmode="numeric" id="pPrice" placeholder="مثلاً 150000">
+
+      <label>دسته‌بندی</label>
+      <select id="pCategory">
+        <option value="">در حال بارگذاری دسته‌ها...</option>
+      </select>
+
+      <label>عکس اصلی محصول</label>
+      <div class="file-wrap">
+        <img id="pImagePreview">
+        <input type="file" id="pImage" accept="image/*">
+      </div>
+
+      <button class="primary" id="submitBtn">ثبت محصول</button>
+      <div class="msg" id="submitMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>محصولات ثبت‌شده من</h2>
+      <div id="myProducts"><div class="empty">در حال بارگذاری...</div></div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+const SUPABASE_URL = "https://cmzbiyscsalzopsdydtg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtemJpeXNjc2Fsem9wc2R5ZHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1ODEwODMsImV4cCI6MjEwMTE1NzA4M30.tuNc5Yftdi-402RCEojcbeiDszaJcfEewqr9UADffHU";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentVendor = null; // { id, shop_name, shop_phone }
+
+const el = id => document.getElementById(id);
+
+function showMsg(elm, text, type){
+  elm.textContent = text;
+  elm.className = 'msg ' + type;
+}
+function clearMsg(elm){
+  elm.className = 'msg';
+  elm.textContent = '';
+}
+
+// ---------- ورود ----------
+el('loginBtn').addEventListener('click', doLogin);
+
+async function doLogin(){
+  const email = el('loginEmail').value.trim();
+  const password = el('loginPassword').value;
+  const msg = el('loginMsg');
+  clearMsg(msg);
+
+  if(!email || !password){
+    showMsg(msg, 'ایمیل و رمز عبور رو وارد کن.', 'error');
+    return;
+  }
+
+  el('loginBtn').disabled = true;
+  el('loginBtn').innerHTML = 'در حال ورود...<span class="spinner"></span>';
+
+  const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
+
+  if(authError){
+    showMsg(msg, 'ایمیل یا رمز عبور اشتباهه.', 'error');
+    resetLoginBtn();
+    return;
+  }
+
+  // چک کن کاربر یه مغازه‌دار فعال هست
+  const { data: vendorRow, error: vendorError } = await sb
+    .from('vendors')
+    .select('id, shop_name, shop_phone, active')
+    .eq('user_id', authData.user.id)
+    .maybeSingle();
+
+  if(vendorError || !vendorRow || !vendorRow.active){
+    showMsg(msg, 'این حساب دسترسی به پنل مغازه‌داران رو نداره یا غیرفعال شده. با مدیر تماس بگیر.', 'error');
+    await sb.auth.signOut();
+    resetLoginBtn();
+    return;
+  }
+
+  currentVendor = vendorRow;
+  enterApp();
+}
+
+function resetLoginBtn(){
+  el('loginBtn').disabled = false;
+  el('loginBtn').textContent = 'ورود';
+}
+
+function enterApp(){
+  el('loginScreen').style.display = 'none';
+  el('appScreen').style.display = 'block';
+  el('logoutBtn').style.display = 'block';
+  el('shopLabel').textContent = currentVendor.shop_name;
+  el('vendorShopName').textContent = currentVendor.shop_name;
+  el('vendorShopPhone').textContent = currentVendor.shop_phone || '-';
+  loadCategories();
+  loadMyProducts();
+}
+
+el('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  currentVendor = null;
+  el('appScreen').style.display = 'none';
+  el('logoutBtn').style.display = 'none';
+  el('loginScreen').style.display = 'block';
+  el('loginEmail').value = '';
+  el('loginPassword').value = '';
+  clearMsg(el('loginMsg'));
+});
+
+// اگه از قبل لاگین بوده (رفرش صفحه)
+(async function checkExistingSession(){
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){
+    const { data: vendorRow } = await sb
+      .from('vendors')
+      .select('id, shop_name, shop_phone, active')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+    if(vendorRow && vendorRow.active){
+      currentVendor = vendorRow;
+      enterApp();
+    } else {
+      await sb.auth.signOut();
+    }
+  }
+})();
+
+// ---------- دسته‌بندی‌ها ----------
+async function loadCategories(){
+  const sel = el('pCategory');
+  const { data, error } = await sb
+    .from('products')
+    .select('category')
+    .not('category', 'is', null);
+
+  if(error || !data){
+    sel.innerHTML = '<option value="">خطا در بارگذاری دسته‌ها</option>';
+    return;
+  }
+
+  const unique = [...new Set(data.map(r => r.category).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">انتخاب کن...</option>' +
+    unique.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+}
+
+// ---------- فرمت قیمت ----------
+el('pPrice').addEventListener('input', formatPriceInput);
+function formatPriceInput(e){
+  let digits = e.target.value.replace(/[^\d]/g, '');
+  e.target.value = digits ? Number(digits).toLocaleString('en-US') : '';
+}
+
+// ---------- پیش‌نمایش عکس ----------
+el('pImage').addEventListener('change', () => {
+  const file = el('pImage').files[0];
+  const preview = el('pImagePreview');
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.style.display = 'none';
+  }
+});
+
+// ---------- ثبت محصول ----------
+el('submitBtn').addEventListener('click', submitProduct);
+
+async function submitProduct(){
+  const msg = el('submitMsg');
+  clearMsg(msg);
+
+  const name = el('pName').value.trim();
+  const priceRaw = el('pPrice').value.replace(/,/g, '');
+  const price = parseInt(priceRaw, 10);
+  const category = el('pCategory').value;
+  const file = el('pImage').files[0];
+
+  if(!name){ showMsg(msg, 'اسم محصول رو بنویس.', 'error'); return; }
+  if(!price || price <= 0){ showMsg(msg, 'قیمت درست وارد کن.', 'error'); return; }
+  if(!category){ showMsg(msg, 'یه دسته‌بندی انتخاب کن.', 'error'); return; }
+  if(!file){ showMsg(msg, 'یه عکس برای محصول انتخاب کن.', 'error'); return; }
+
+  el('submitBtn').disabled = true;
+  el('submitBtn').innerHTML = 'در حال ثبت...<span class="spinner"></span>';
+
+  try{
+    // آپلود عکس - با تبدیل به arrayBuffer به‌خاطر باگ سافاری آیفون
+    const fileExt = file.name.split('.').pop();
+    const fileName = `vendor_${currentVendor.id}_${Date.now()}.${fileExt}`;
+    const arrayBuffer = await file.arrayBuffer();
+
+    const { error: uploadError } = await sb.storage
+      .from('product-images')
+      .upload(fileName, arrayBuffer, { contentType: file.type });
+
+    if(uploadError) throw uploadError;
+
+    const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
+    const imageUrl = urlData.publicUrl;
+
+    const { error: insertError } = await sb.from('products').insert({
+      name,
+      price,
+      category,
+      image_url: imageUrl,
+      vendor_id: currentVendor.id,
+      pending_approval: true,
+      in_stock: true,
+      code: null,
+      discount_percent: 0,
+      variant_label: null,
+      variants: [],
+      gallery_images: []
+    });
+
+    if(insertError) throw insertError;
+
+    showMsg(msg, 'محصول ثبت شد و بعد از تایید مدیر، در فروشگاه نمایش داده می‌شه ✅', 'success');
+    el('pName').value = '';
+    el('pPrice').value = '';
+    el('pCategory').value = '';
+    el('pImage').value = '';
+    el('pImagePreview').style.display = 'none';
+    loadMyProducts();
+
+  } catch(err){
+    console.error(err);
+    showMsg(msg, 'خطا در ثبت محصول. دوباره امتحان کن.', 'error');
+  } finally {
+    el('submitBtn').disabled = false;
+    el('submitBtn').textContent = 'ثبت محصول';
+  }
+}
+
+// ---------- لیست محصولات خودم ----------
+async function loadMyProducts(){
+  const box = el('myProducts');
+  const { data, error } = await sb
+    .from('products')
+    .select('id, name, price, image_url, pending_approval, created_at')
+    .eq('vendor_id', currentVendor.id)
+    .order('created_at', { ascending: false });
+
+  if(error){
+    box.innerHTML = '<div class="empty">خطا در بارگذاری محصولات</div>';
+    return;
+  }
+
+  if(!data || data.length === 0){
+    box.innerHTML = '<div class="empty">هنوز محصولی ثبت نکردی</div>';
+    return;
+  }
+
+  box.innerHTML = data.map(p => `
+    <div class="product-row">
+      <img src="${escapeHtml(p.image_url || '')}" onerror="this.style.opacity=0">
+      <div class="pname">
+        ${escapeHtml(p.name)}
+        <div class="pprice">${Number(p.price).toLocaleString('en-US')} تومان</div>
+      </div>
+      <span class="badge ${p.pending_approval ? 'pending' : 'approved'}">
+        ${p.pending_approval ? 'در انتظار تایید' : 'تایید شده'}
+      </span>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+</script>
+
+</body>
+</html>
