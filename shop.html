@@ -684,11 +684,19 @@ async function loadProducts(){
         t1:'#FBF3E1', t2:'#EFDFC0'
 
   }));
-
   bestsellerIds = computeBestsellerIds();
   renderChips();
   renderGrid();
   updateBadges();
+  openProductFromURL();
+}
+
+function openProductFromURL(){
+  const params = new URLSearchParams(window.location.search);
+  const pid = params.get('product');
+  if(pid){
+    openProductDetail(pid);
+  }
 }
 
 async function loadBanners(){
