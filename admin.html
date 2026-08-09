@@ -1351,6 +1351,17 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
     delivered: '#2A6B3B',
     cancelled: '#A32638'
   };
+  function getOrderShopContacts(order){
+    if(!Array.isArray(order.items)) return [];
+    const seen = {};
+    order.items.forEach(it => {
+      const prod = allProducts.find(p => (it.code && p.code === it.code) || p.name === it.name);
+      if(prod && prod.shop_phone && !seen[prod.shop_phone]){
+        seen[prod.shop_phone] = prod.shop_name || 'مغازه';
+      }
+    });
+    return Object.entries(seen).map(([phone, shop]) => ({ phone, shop }));
+  }
 
     async function loadOrders(){
     let query = sb.from('orders').select('*').order('created_at', {ascending:false});
