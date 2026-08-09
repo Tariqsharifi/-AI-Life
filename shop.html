@@ -1237,12 +1237,14 @@ function openProductDetail(id){
         </div>
         <span style="font-size:12px;color:rgba(39,27,30,0.55);">${r && r.count ? `(${r.count.toLocaleString('fa-IR')} امتیاز)` : 'اولین نفری باش که امتیاز میدی'}</span>
       </div>
-      <div class="pd-actions">
+           <div class="pd-actions">
         ${p.inStock ? `
           <button class="pd-add" onclick="addToCart('${p.id}', currentVariantSelection)">افزودن به سبد</button>
           <button class="pd-buy" onclick="orderProduct('${p.id}', currentVariantSelection)">سفارش سریع</button>
         ` : `<button class="pd-add" disabled style="opacity:0.5;">ناموجود</button>`}
       </div>
+      <button class="btn-secondary" style="width:100%; margin-top:10px; border:1.5px solid var(--line); background:transparent; color:var(--ink); border-radius:12px; padding:11px; font-family:'Vazirmatn'; font-weight:700; font-size:13px;" onclick="toggleCompare('${p.id}')" id="compareToggleBtn">${compareList.includes(p.id) ? '✓ توی لیست مقایسه هست' : '⚖️ افزودن به مقایسه'}</button>
+
       ${related.length>0 ? `
         <div class="pd-related">
           <h4>محصولات مشابه</h4>
