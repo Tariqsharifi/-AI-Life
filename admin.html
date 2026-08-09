@@ -352,6 +352,28 @@
 
   <div class="plist" id="adminsList" style="margin-top:14px;"></div>
 </div>
+    <div class="box">
+  <h2>مدیریت مغازه‌داران</h2>
+  <div class="subtitle">مغازه‌دارهایی که می‌تونن از پنل vendor.html محصول ثبت کنن</div>
+
+  <div id="createVendorForm" style="display:none;">
+    <label>ایمیل مغازه‌دار</label>
+    <input type="email" id="newVendorEmail" placeholder="ایمیل مغازه‌دار جدید" dir="ltr">
+    <label>رمز عبور موقت</label>
+    <input type="text" id="newVendorPassword" placeholder="حداقل ۶ کاراکتر" dir="ltr">
+    <label>اسم مغازه</label>
+    <input type="text" id="newVendorShopName" placeholder="مثلاً پلاستیک فروشی رضا">
+    <label>شماره تماس مغازه (اختیاری)</label>
+    <input type="tel" id="newVendorShopPhone" placeholder="مثلاً 09121234567" dir="ltr">
+    <label>آدرس مغازه (اختیاری)</label>
+    <input type="text" id="newVendorShopAddress" placeholder="مثلاً بازار پلاسکو، طبقه دوم">
+    <button class="btn-primary" onclick="createVendor()">ساخت مغازه‌دار جدید</button>
+    <div class="msg" id="vendorMsg"></div>
+  </div>
+
+  <div class="plist" id="vendorsList" style="margin-top:14px;"></div>
+</div>
+
 <div class="box" id="loginLogsBox" style="display:none;">
   <h2>تاریخچه ورودها</h2>
   <div class="subtitle">آخرین ۳۰ باری که کسی وارد پنل شده، با نوع دستگاه</div>
