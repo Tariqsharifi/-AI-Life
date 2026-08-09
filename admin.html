@@ -227,8 +227,12 @@
         <option value="delivered">تحویل داده شده</option>
         <option value="cancelled">لغو شده</option>
       </select>
-      <button class="btn-secondary" onclick="loadOrders()">فیلتر کن</button>
+            <button class="btn-secondary" onclick="loadOrders()">فیلتر کن</button>
       <div class="report-summary" id="orderSummary" style="margin-top:14px;"></div>
+      <div id="salesChartWrap" style="margin-bottom:14px; display:none;">
+        <canvas id="salesChart" height="160"></canvas>
+      </div>
+      <div id="topProductsWrap" style="margin-bottom:14px;"></div>
       <div class="plist" id="orderList"></div>
 
             <button class="btn-secondary" onclick="exportOrdersExcel()">خروجی Excel سفارش‌ها</button>
