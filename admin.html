@@ -843,6 +843,15 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
     renderAdminList(filtered);
   }
 
+async function approveVendorProduct(id){
+  const { error } = await sb.from('products').update({ pending_approval: false }).eq('id', id);
+  if(error){
+    alert('خطا: ' + error.message);
+  } else {
+    loadProducts();
+  }
+}
+
 
   async function toggleStock(id, newStatus){
     const { error } = await sb.from('products').update({ in_stock: newStatus }).eq('id', id);
