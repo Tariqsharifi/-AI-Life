@@ -492,16 +492,7 @@ async function clearAllLoginLogs(){
   if(error){ alert('خطا: ' + error.message); } else { loadLoginLogs(); }
 }
 
-async function deleteLoginLog(id){
-  const { error } = await sb.from('login_logs').delete().eq('id', id);
-  if(error){ alert('خطا: ' + error.message); } else { loadLoginLogs(); }
-}
 
-async function clearAllLoginLogs(){
-  if(!confirm('همه‌ی تاریخچه ورودها پاک بشه؟')) return;
-  const { error } = await sb.from('login_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-  if(error){ alert('خطا: ' + error.message); } else { loadLoginLogs(); }
-}
   async function checkNewOrders(){
     const { count, error } = await sb.from('orders').select('*', { count: 'exact', head: true }).or('status.is.null,status.eq.new');
     const badge = document.getElementById('newOrdersBadge');
