@@ -1863,6 +1863,7 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
     sub.textContent = isOwnerAdmin ? 'به‌عنوان مدیر اصلی می‌تونی ادمین جدید بسازی یا دسترسی بقیه رو مدیریت کنی' : 'لیست کسانی که به پنل دسترسی دارن';
     form.style.display = isOwnerAdmin ? 'block' : 'none';
     loadLoginLogs();
+    loadVendors();
 
     list.innerHTML = data.map(a => `
       <div class="prow">
