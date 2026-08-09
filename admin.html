@@ -1571,12 +1571,13 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
       return;
     }
 
-        const updateData = {
-      name, code: code || null, price: parseInt(price), category,
-      description: description || null,
-      cost_price: cost ? parseInt(cost) : 0
-    };
-
+  const updateData = {
+  name, code: code || null, price: parseInt(price), category,
+  description: description || null,
+  cost_price: cost ? parseInt(cost) : 0,
+  shop_phone: shopPhone || null
+};
+    
     if(file){
       const fileName = `${Date.now()}_${file.name}`;
       const fileBuffer = await file.arrayBuffer();
