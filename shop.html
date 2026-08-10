@@ -757,7 +757,7 @@ async function loadProducts(){
   const grid = document.getElementById('grid');
   grid.innerHTML = `<div class="empty"><div class="big">⏳</div>در حال بارگذاری محصولات...</div>`;
 
-  const { data, error } = await sb.from('products').select('*').order('created_at', {ascending:false});
+const { data, error } = await sb.from('products').select('*').or('pending_approval.eq.false,pending_approval.is.null').order('created_at', {ascending:false});
   const { data: ratingsData } = await sb.from('product_ratings').select('product_id, rating');
 
   ratingsMap = {};
