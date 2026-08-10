@@ -784,7 +784,8 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
       discount_percent: discount ? parseInt(discount) : 0,
       variant_label: variantLabel || null,
       variants: variants,
-      gallery_images: [],
+            gallery_images: galleryUrls,
+
       cost_price: cost ? parseInt(cost) : 0
     });
 
