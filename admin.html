@@ -707,7 +707,9 @@ logDeviceInfo();
 
   async function addProduct(){
     const name = document.getElementById('pName').value.trim();
-    const code = document.getElementById('pCode').value.trim();
+    const { data: codeData, error: codeError } = await sb.rpc('get_next_vendor_code');
+    const code = codeError ? null : codeData;
+
        const price = document.getElementById('pPrice').value.replace(/[^0-9]/g, '');
     const cost = document.getElementById('pCost').value.replace(/[^0-9]/g, '');
     const category = document.getElementById('pCat').value.trim();
