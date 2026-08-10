@@ -1495,6 +1495,8 @@ async function approveVendorProduct(id){
     }
     renderOrderList(filtered);
   }
+    let openOrderFolders = {};
+
   function renderOrderList(data){
     const list = document.getElementById('orderList');
     const summary = document.getElementById('orderSummary');
@@ -1512,34 +1514,59 @@ async function approveVendorProduct(id){
 
     renderSalesInsights(data);
 
-    list.innerHTML = data.map(o => {
-      const itemsText = Array.isArray(o.items)
-        ? o.items.map(it => `${it.name}${it.variant ? ' ('+it.variant+')' : ''} × ${it.qty}`).join('، ')
-        : '';
-            const shopContacts = getOrderShopContacts(o);
+    const groups = {};
+    data.forEach(o => {
+      const day = new Date(o.created_at).toLocaleDateString('fa-IR');
+      if(!groups[day]) groups[day] = [];
+      groups[day].push(o);
+    });
 
-      const st = o.status || 'new';
+    list.innerHTML = Object.keys(groups).map(day => {
+      const dayOrders = groups[day];
+      const isOpen = !!openOrderFolders[day];
+      const dayTotal = dayOrders.reduce((s,o)=>s+Number(o.total||0),0);
+      const rows = dayOrders.map(o => {
+        const itemsText = Array.isArray(o.items)
+          ? o.items.map(it => `${it.name}${it.variant ? ' ('+it.variant+')' : ''} × ${it.qty}`).join('، ')
+          : '';
+        const shopContacts = getOrderShopContacts(o);
+        const st = o.status || 'new';
+        return `
+          <div class="order-item">
+            <div class="o-top">
+              <span class="o-date">${new Date(o.created_at).toLocaleString('fa-IR')}</span>
+              <span class="o-total">${Number(o.total).toLocaleString('fa-IR')} تومان</span>
+            </div>
+            ${(o.customer_name || o.customer_phone) ? `<div style="font-size:12px;font-weight:700;margin-top:4px;">${o.customer_name||''} ${o.customer_phone ? '· '+o.customer_phone : ''}</div>` : ''}
+            <div class="o-items">${itemsText}</div>
+            ${shopContacts.length>0 ? `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">${shopContacts.map(c => `<a class="btn-secondary btn-small" href="tel:${c.phone}" style="text-decoration:none;">📞 ${c.shop}</a>`).join('')}</div>` : ''}
+            ${o.coupon_code ? `<div class="o-coupon">کد تخفیف: ${o.coupon_code} (${o.discount_percent}٪)</div>` : ''}
+            <div style="margin-top:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="background:${orderStatusColors[st]}; color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px;">${orderStatusLabels[st]}</span>
+              <select onchange="updateOrderStatus('${o.id}', this.value)" style="width:auto; margin:0; padding:6px 8px; font-size:12px;">
+                ${Object.keys(orderStatusLabels).map(key => `<option value="${key}" ${key===st?'selected':''}>${orderStatusLabels[key]}</option>`).join('')}
+              </select>
+            </div>
+            <button class="btn-danger" style="margin-top:8px;" onclick="deleteOrder('${o.id}')">حذف سفارش</button>
+          </div>
+        `;
+      }).join('');
+
       return `
-        <div class="order-item">
-          <div class="o-top">
-            <span class="o-date">${new Date(o.created_at).toLocaleString('fa-IR')}</span>
-            <span class="o-total">${Number(o.total).toLocaleString('fa-IR')} تومان</span>
+        <div style="border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;">
+          <div onclick="toggleOrderFolder('${day}')" style="padding:12px 14px;background:#fff;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <span style="font-weight:800;font-size:13.5px;color:var(--plum);">📁 ${day} (${dayOrders.length.toLocaleString('fa-IR')} سفارش · ${dayTotal.toLocaleString('fa-IR')} تومان)</span>
+            <span style="font-size:16px;">${isOpen ? '−' : '+'}</span>
           </div>
-          ${(o.customer_name || o.customer_phone) ? `<div style="font-size:12px;font-weight:700;margin-top:4px;">${o.customer_name||''} ${o.customer_phone ? '· '+o.customer_phone : ''}</div>` : ''}
-          <div class="o-items">${itemsText}</div>
-                    ${shopContacts.length>0 ? `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">${shopContacts.map(c => `<a class="btn-secondary btn-small" href="tel:${c.phone}" style="text-decoration:none;">📞 ${c.shop}</a>`).join('')}</div>` : ''}
-
-          ${o.coupon_code ? `<div class="o-coupon">کد تخفیف: ${o.coupon_code} (${o.discount_percent}٪)</div>` : ''}
-          <div style="margin-top:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span style="background:${orderStatusColors[st]}; color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px;">${orderStatusLabels[st]}</span>
-            <select onchange="updateOrderStatus('${o.id}', this.value)" style="width:auto; margin:0; padding:6px 8px; font-size:12px;">
-              ${Object.keys(orderStatusLabels).map(key => `<option value="${key}" ${key===st?'selected':''}>${orderStatusLabels[key]}</option>`).join('')}
-            </select>
-          </div>
-          <button class="btn-danger" style="margin-top:8px;" onclick="deleteOrder('${o.id}')">حذف سفارش</button>
+          ${isOpen ? `<div style="padding:0 10px 10px;">${rows}</div>` : ''}
         </div>
       `;
-       }).join('');
+    }).join('');
+  }
+
+  function toggleOrderFolder(day){
+    openOrderFolders[day] = !openOrderFolders[day];
+    filterOrdersDisplay();
   }
 
   let salesChartInstance = null;
