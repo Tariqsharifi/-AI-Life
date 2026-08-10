@@ -1763,8 +1763,14 @@ function shareProduct(id){
     url
   };
   if(navigator.share){
-    navigator.share(shareData).catch(()=>{});
-  } else if(navigator.clipboard){
+    navigator.share(shareData).catch(()=>{ copyShareLink(url); });
+  } else {
+    copyShareLink(url);
+  }
+}
+
+function copyShareLink(url){
+  if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(url).then(()=>{
       alert('لینک محصول کپی شد ✅');
     }).catch(()=>{
