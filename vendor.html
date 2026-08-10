@@ -431,11 +431,11 @@ async function submitProduct(){
     // آپلود عکس - با تبدیل به arrayBuffer به‌خاطر باگ سافاری آیفون
     const fileExt = file.name.split('.').pop();
     const fileName = `vendor_${currentVendor.id}_${Date.now()}.${fileExt}`;
-    const arrayBuffer = await file.arrayBuffer();
+    const compressedBlob = await compressImage(file);
 
     const { error: uploadError } = await sb.storage
       .from('product-images')
-      .upload(fileName, arrayBuffer, { contentType: file.type });
+      .upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
 
     if(uploadError) throw uploadError;
 
