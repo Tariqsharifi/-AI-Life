@@ -156,8 +156,9 @@
       <input type="text" id="pVariantLabel" placeholder="مثلاً رنگ">
       <label>گزینه‌ها (اختیاری، هر خط یک گزینه)</label>
       <textarea id="pVariantsText" placeholder="قرمز&#10;آبی,700000&#10;(اگه قیمت گزینه فرق داره، با کاما بنویس)"></textarea>
-      <label>عکس اصلی محصول</label>
-      <input type="file" id="pImage" accept="image/*">
+ <label>عکس‌ها (اولین عکس، عکس اصلی می‌شه و بقیه توی گالری قرار می‌گیرن)</label>
+      <input type="file" id="pImage" accept="image/*" multiple>
+
       <button class="btn-primary" onclick="addProduct()">افزودن محصول</button>
       <div class="msg" id="addMsg"></div>
     </div>
