@@ -397,7 +397,8 @@ async function submitProduct(){
   const name = el('pName').value.trim();
   const priceRaw = el('pPrice').value.replace(/,/g, '');
   const price = parseInt(priceRaw, 10);
-  const category = el('pCategory').value;
+    const category = el('pCategory').value;
+  const phone = el('pPhone').value.trim();
   const file = el('pImage').files[0];
 
   if(!name){ showMsg(msg, 'اسم محصول رو بنویس.', 'error'); return; }
