@@ -990,6 +990,7 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
   }
 
   let openCategoryFolders = {};
+let pendingFolderOpen = false;
 
   function renderAdminList(items){
     const list = document.getElementById('plist');
