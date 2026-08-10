@@ -1044,6 +1044,8 @@ async function approveVendorProduct(id){
     }
   }
 
+  let openBannerFolders = {};
+
   async function loadBanners(){
     const { data, error } = await sb.from('banners').select('*').order('sort_order', {ascending:true});
     const list = document.getElementById('bannerList');
@@ -1051,19 +1053,41 @@ async function approveVendorProduct(id){
       list.innerHTML = '<div style="font-size:13px;color:rgba(39,27,30,0.5)">هنوز بنری اضافه نشده</div>';
       return;
     }
-    list.innerHTML = data.map(b => `
-      <div class="prow banner-row">
-        <img src="${b.image_url}">
-        <div class="pinfo">
-          <div class="pname">${b.title || '(بدون عنوان)'} ${b.active===false ? '<span style="color:#A32638;font-size:11px;">(غیرفعال)</span>' : ''}</div>
-          <div class="pmeta">ترتیب: ${b.sort_order}</div>
+
+    const groups = { 'فعال': [], 'غیرفعال': [] };
+    data.forEach(b => { groups[b.active===false ? 'غیرفعال' : 'فعال'].push(b); });
+
+    list.innerHTML = Object.keys(groups).filter(k => groups[k].length>0).map(key => {
+      const groupItems = groups[key];
+      const isOpen = !!openBannerFolders[key];
+      const rows = groupItems.map(b => `
+        <div class="prow banner-row">
+          <img src="${b.image_url}">
+          <div class="pinfo">
+            <div class="pname">${b.title || '(بدون عنوان)'}</div>
+            <div class="pmeta">ترتیب: ${b.sort_order}</div>
+          </div>
+          <div class="pactions">
+            <button class="btn-secondary btn-small" onclick="toggleBanner('${b.id}', ${b.active===false ? 'true' : 'false'})">${b.active===false ? 'فعال کن' : 'غیرفعال کن'}</button>
+            <button class="btn-danger" onclick="deleteBanner('${b.id}')">حذف</button>
+          </div>
         </div>
-        <div class="pactions">
-          <button class="btn-secondary btn-small" onclick="toggleBanner('${b.id}', ${b.active===false ? 'true' : 'false'})">${b.active===false ? 'فعال کن' : 'غیرفعال کن'}</button>
-          <button class="btn-danger" onclick="deleteBanner('${b.id}')">حذف</button>
+      `).join('');
+      return `
+        <div style="border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;">
+          <div onclick="toggleBannerFolder('${key}')" style="padding:12px 14px;background:#fff;display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+            <span style="font-weight:800;font-size:13.5px;color:var(--plum);">📁 ${key} (${groupItems.length.toLocaleString('fa-IR')})</span>
+            <span style="font-size:16px;">${isOpen ? '−' : '+'}</span>
+          </div>
+          ${isOpen ? `<div style="padding:0 10px 10px;">${rows}</div>` : ''}
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+  }
+
+  function toggleBannerFolder(key){
+    openBannerFolders[key] = !openBannerFolders[key];
+    loadBanners();
   }
 
   async function toggleBanner(id, newStatus){
