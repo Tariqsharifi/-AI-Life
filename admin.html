@@ -143,10 +143,13 @@
   <div id="panelBox">
 
     <!-- Pending vendor products - always at top, no digging through folders -->
-    <div class="box pending-box" id="pendingBox" style="display:none;">
-      <h2>محصولات در انتظار تایید <span class="pending-count-badge" id="pendingCountBadge">0</span></h2>
+     <div class="box pending-box" id="pendingBox" style="display:none;">
+      <div onclick="togglePendingFolder()" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+        <h2 style="margin:0;">📁 محصولات در انتظار تایید <span class="pending-count-badge" id="pendingCountBadge">0</span></h2>
+        <span id="pendingFolderIcon" style="font-size:18px;font-weight:800;color:#8A6100;">+</span>
+      </div>
       <div class="subtitle">محصولاتی که مغازه‌دارها از پنل vendor.html ثبت کردن و منتظر تایید تو هستن</div>
-      <div id="pendingList"></div>
+      <div id="pendingList" style="display:none;"></div>
     </div>
 
     <div class="box">
