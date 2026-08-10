@@ -66,7 +66,7 @@
   }
 
   .search-wrap{
-    max-width:1000px; margin:14px auto 0; padding:0 18px 16px;
+    max-width:1000px; margin:14px auto 0; padding:0 18px 16px; position:relative;
   }
   .search-box{
     display:flex; align-items:center; gap:10px;
@@ -79,6 +79,23 @@
     flex:1; color:var(--ink); direction:rtl;
   }
   .search-box svg{ flex-shrink:0; opacity:0.55; }
+
+  .search-suggestions{
+    position:absolute; top:100%; right:18px; left:18px;
+    background:var(--card); border-radius:14px; border:1px solid var(--line);
+    box-shadow:0 8px 24px rgba(39,27,30,0.12); overflow:hidden; z-index:50;
+    display:none;
+  }
+  .search-suggestion-item{
+    display:flex; align-items:center; gap:10px; padding:10px 14px;
+    cursor:pointer; border-bottom:1px solid var(--line);
+  }
+  .search-suggestion-item:last-child{ border-bottom:none; }
+  .search-suggestion-item img{
+    width:36px; height:36px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--tint1);
+  }
+  .search-suggestion-item .ssi-name{ font-size:13.5px; color:var(--ink); font-weight:700; }
+  .search-suggestion-item .ssi-price{ font-size:12px; color:var(--saffron); font-weight:800; margin-top:2px; }
 
   /* ---------- Banner slider ---------- */
   .banner-slider{ max-width:1000px; margin:14px auto 0; padding:0 18px; position:relative; }
