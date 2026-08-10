@@ -437,8 +437,9 @@ async function submitProduct(){
       pending_approval: true,
       in_stock: true,
       code: productCode,
-      shop_name: currentVendor.shop_name,
-      shop_phone: currentVendor.shop_phone || null,
+            shop_name: currentVendor.shop_name,
+      shop_phone: phone,
+
       discount_percent: 0,
       variant_label: null,
       variants: [],
