@@ -748,23 +748,31 @@ const shopPhone = document.getElementById('pShopPhone').value.trim();
       showMsg('addMsg', 'اسم، قیمت و دسته‌بندی را پر کن', false);
       return;
     }
-
     let imageUrl = null;
+    let galleryUrls = [];
+    const files = fileInput.files;
 
-    if(file){
-      const fileName = `${Date.now()}_${file.name}`;
-     const compressedBlob = await compressImage(file);
-      const { data: uploadData, error: uploadError } = await sb.storage
-        .from('product-images')
-        .upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
+    if(files && files.length > 0){
+      for(let i = 0; i < files.length; i++){
+        const f = files[i];
+        const fileName = `${Date.now()}_${i}_${f.name}`;
+        const compressedBlob = await compressImage(f);
+        const { error: uploadError } = await sb.storage
+          .from('product-images')
+          .upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
 
-      if(uploadError){
-        showMsg('addMsg', 'خطا در آپلود عکس: ' + uploadError.message, false);
-        return;
+        if(uploadError){
+          showMsg('addMsg', 'خطا در آپلود عکس: ' + uploadError.message, false);
+          return;
+        }
+
+        const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
+        if(i === 0){
+          imageUrl = urlData.publicUrl;
+        } else {
+          galleryUrls.push(urlData.publicUrl);
+        }
       }
-
-      const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
-      imageUrl = urlData.publicUrl;
     }
 
     const variants = variantsText.trim() ? parseVariantsText(variantsText) : [];
