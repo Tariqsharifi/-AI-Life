@@ -135,8 +135,9 @@
 
       <label>اسم محصول</label>
       <input type="text" id="pName" placeholder="مثلاً سطل زباله پلاستیکی">
-      <label>کد محصول</label>
-      <input type="text" id="pCode" placeholder="مثلاً S1" dir="ltr">
+     <label>کد محصول (به صورت خودکار تعیین می‌شه)</label>
+<input type="text" id="pCode" readonly style="background:#f0ece2;color:rgba(39,27,30,0.6);">
+
             <label>قیمت (تومان)</label>
       <input type="text" inputmode="numeric" id="pPrice" placeholder="650,000" dir="ltr" oninput="formatPriceInput(this)">
       <label>قیمت خرید (تومان، اختیاری)</label>
