@@ -404,6 +404,8 @@ async function submitProduct(){
   if(!name){ showMsg(msg, 'اسم محصول رو بنویس.', 'error'); return; }
   if(!price || price <= 0){ showMsg(msg, 'قیمت درست وارد کن.', 'error'); return; }
   if(!category){ showMsg(msg, 'یه دسته‌بندی انتخاب کن.', 'error'); return; }
+    if(!phone){ showMsg(msg, 'شماره تماس رو وارد کن.', 'error'); return; }
+
   if(!file){ showMsg(msg, 'یه عکس برای محصول انتخاب کن.', 'error'); return; }
 
   el('submitBtn').disabled = true;
