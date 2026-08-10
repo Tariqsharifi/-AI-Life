@@ -232,27 +232,20 @@
 const SUPABASE_URL = "https://cmzbiyscsalzopsdydtg.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtemJpeXNjc2Fsem9wc2R5ZHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1ODEwODMsImV4cCI6MjEwMTE1NzA4M30.tuNc5Yftdi-402RCEojcbeiDszaJcfEewqr9UADffHU";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-function compressImage(file, maxDim = 1200, quality = 0.8){
+async function compressImage(file, maxDim = 1200, quality = 0.8){
+  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  let w = bitmap.width, h = bitmap.height;
+  if(w > maxDim || h > maxDim){
+    if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+    else { w = Math.round(w * maxDim / h); h = maxDim; }
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
   return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = e => { img.src = e.target.result; };
-    reader.onerror = reject;
-    img.onload = () => {
-      let w = img.width, h = img.height;
-      if(w > maxDim || h > maxDim){
-        if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
-        else { w = Math.round(w * maxDim / h); h = maxDim; }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      canvas.toBlob(blob => {
-        if(blob) resolve(blob); else reject(new Error('compress failed'));
-      }, 'image/jpeg', quality);
-    };
-    img.onerror = reject;
-    reader.readAsDataURL(file);
+    canvas.toBlob(blob => {
+      if(blob) resolve(blob); else reject(new Error('compress failed'));
+    }, 'image/jpeg', quality);
   });
 }
 
