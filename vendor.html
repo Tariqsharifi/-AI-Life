@@ -325,6 +325,13 @@ async function doLogin(){
   const msg = el('loginMsg');
   clearMsg(msg);
 
+  const lockUntil = parseInt(localStorage.getItem('vendorLockUntil') || '0');
+  if(Date.now() < lockUntil){
+    const remain = Math.ceil((lockUntil - Date.now()) / 1000);
+    showMsg(msg, `تلاش‌های اشتباه زیادی زدی، ${remain} ثانیه دیگه دوباره امتحان کن.`, 'error');
+    return;
+  }
+
   if(!email || !password){
     showMsg(msg, 'ایمیل و رمز عبور رو وارد کن.', 'error');
     return;
@@ -336,10 +343,21 @@ async function doLogin(){
   const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
 
   if(authError){
-    showMsg(msg, 'ایمیل یا رمز عبور اشتباهه.', 'error');
+    const attempts = (parseInt(localStorage.getItem('vendorLoginAttempts') || '0')) + 1;
+    localStorage.setItem('vendorLoginAttempts', attempts);
+    if(attempts >= 5){
+      localStorage.setItem('vendorLockUntil', Date.now() + 120000);
+      localStorage.setItem('vendorLoginAttempts', '0');
+      showMsg(msg, 'تعداد تلاش‌های اشتباه زیاد بود، ۲ دقیقه صبر کن.', 'error');
+    } else {
+      showMsg(msg, 'ایمیل یا رمز عبور اشتباهه.', 'error');
+    }
     resetLoginBtn();
     return;
   }
+
+  localStorage.removeItem('vendorLoginAttempts');
+  localStorage.removeItem('vendorLockUntil');
 
   // چک کن کاربر یه مغازه‌دار فعال هست
   const { data: vendorRow, error: vendorError } = await sb
