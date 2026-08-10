@@ -1681,6 +1681,8 @@ function openProductDetail(id){
           <button class="pd-buy" onclick="orderProduct('${p.id}', currentVariantSelection)">سفارش سریع</button>
         ` : `<button class="pd-add" disabled style="opacity:0.5;">ناموجود</button>`}
       </div>
+            <button class="btn-secondary" style="width:100%; margin-top:10px; border:1.5px solid var(--line); background:transparent; color:var(--ink); border-radius:12px; padding:11px; font-family:'Vazirmatn'; font-weight:700; font-size:13px;" onclick="shareProduct('${p.id}')">🔗 اشتراک‌گذاری محصول</button>
+
       <button class="btn-secondary" style="width:100%; margin-top:10px; border:1.5px solid var(--line); background:transparent; color:var(--ink); border-radius:12px; padding:11px; font-family:'Vazirmatn'; font-weight:700; font-size:13px;" onclick="toggleCompare('${p.id}')" id="compareToggleBtn">${compareList.includes(p.id) ? '✓ توی لیست مقایسه هست' : '⚖️ افزودن به مقایسه'}</button>
 
       ${related.length>0 ? `
