@@ -382,12 +382,9 @@ el('pImage').addEventListener('change', () => {
 // ---------- ثبت محصول ----------
 el('submitBtn').addEventListener('click', submitProduct);
 async function generateVendorProductCode(){
-  for(let i = 0; i < 5; i++){
-    const candidate = 'V' + Math.random().toString(36).slice(2, 7).toUpperCase();
-    const { data } = await sb.from('products').select('id').eq('code', candidate).maybeSingle();
-    if(!data) return candidate;
-  }
-  return 'V' + Date.now().toString(36).toUpperCase();
+  const { data, error } = await sb.rpc('get_next_vendor_code');
+  if(error || !data) return 'V' + Date.now();
+  return data;
 }
 
 async function submitProduct(){
