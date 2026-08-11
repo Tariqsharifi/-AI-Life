@@ -651,9 +651,10 @@ async function clearAllLoginLogs(){
       <div class="pending-item">
         <img src="${p.image_url || ''}" onerror="this.style.background='#eee'; this.src='';">
         <div class="pinfo">
-          <div class="pname">${p.name} ${p.code ? `<span style="color:#D4A017;font-size:11px;">[${p.code}]</span>` : ''}</div>
+               <div class="pname">${escapeHtml(p.name)} ${p.code ? `<span style="color:#D4A017;font-size:11px;">[${p.code}]</span>` : ''}</div>
           <div class="pmeta">${p.category || ''} · ${Number(p.price).toLocaleString('fa-IR')} تومان</div>
-          <div class="pmeta">مغازه: ${p.shop_name || '—'} ${p.shop_phone ? '· ' + p.shop_phone : ''}</div>
+          <div class="pmeta">مغازه: ${escapeHtml(p.shop_name || '—')} ${p.shop_phone ? '· ' + escapeHtml(p.shop_phone) : ''}</div>
+
         </div>        <button class="btn-approve" onclick="approveVendorProduct('${p.id}')">تایید کن</button>
       </div>
     `).join('');
