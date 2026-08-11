@@ -2057,7 +2057,7 @@ async function approveVendorProduct(id){
           <span class="ca-status ${c.approved ? 'approved' : 'pending'}">${c.approved ? 'تاییدشده' : 'در انتظار'}</span>
         </div>
         <div class="ca-product">محصول: ${c.products ? c.products.name : '—'}</div>
-        <div class="ca-text">${c.comment_text}</div>
+        <div class="ca-text">${escapeHtml(c.comment_text)}</div>
         <div class="ca-actions">
           ${!c.approved ? `<button class="btn-approve" onclick="approveComment('${c.id}')">تایید</button>` : ''}
           <button class="btn-danger" onclick="deleteComment('${c.id}')">حذف</button>
