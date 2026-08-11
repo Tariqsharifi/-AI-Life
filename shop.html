@@ -1502,13 +1502,14 @@ function getCustomerLocation(){
     { enableHighAccuracy: true, timeout: 10000 }
   );
 }
-
 function selectChannel(channel){
   if(!pendingOrder) return;
   const name = document.getElementById('customerNameInput').value.trim();
   const phone = document.getElementById('customerPhoneInput').value.trim();
   const province = document.getElementById('customerProvinceInput').value;
   const city = document.getElementById('customerCityInput').value;
+  const district = document.getElementById('customerDistrictInput').value;
+  const manualAddress = document.getElementById('customerManualAddressInput').value.trim();
   const street = document.getElementById('customerStreetInput').value.trim();
   const plaque = document.getElementById('customerPlaqueInput').value.trim();
   const unit = document.getElementById('customerUnitInput').value.trim();
@@ -1531,16 +1532,19 @@ function selectChannel(channel){
     return;
   }
 
-  const address = `${province}، ${city}، ${street}، پلاک ${plaque}${unit ? '، واحد ' + unit : ''}${postal ? '، کد پستی: ' + postal : ''}`;
+  const address = `${province}، ${city}${district ? '، ' + district : ''}، ${street}، پلاک ${plaque}${unit ? '، واحد ' + unit : ''}${manualAddress ? '، ' + manualAddress : ''}${postal ? '، کد پستی: ' + postal : ''}`;
 
   localStorage.setItem('bazarcheh_customer_name', name);
   localStorage.setItem('bazarcheh_customer_phone', phone);
   localStorage.setItem('bazarcheh_customer_province', province);
   localStorage.setItem('bazarcheh_customer_city', city);
+  localStorage.setItem('bazarcheh_customer_district', district);
+  localStorage.setItem('bazarcheh_customer_manual_address', manualAddress);
   localStorage.setItem('bazarcheh_customer_street', street);
   localStorage.setItem('bazarcheh_customer_plaque', plaque);
   localStorage.setItem('bazarcheh_customer_unit', unit);
   localStorage.setItem('bazarcheh_customer_postal', postal);
+
   lastCustomerName = name;
   lastCustomerPhone = phone;
   lastCustomerAddress = address;
