@@ -808,15 +808,38 @@ const IRAN_CITIES = {
   "همدان": ["همدان","ملایر","نهاوند","تویسرکان","اسدآباد","کبودرآهنگ"],
   "یزد": ["یزد","میبد","اردکان","بافق","ابرکوه"]
 };
-
 function populateCityOptions(province){
   const sel = document.getElementById('customerCityInput');
   const cities = IRAN_CITIES[province] || [];
   if(cities.length === 0){
     sel.innerHTML = '<option value="">اول استان رو انتخاب کن</option>';
-    return;
+  } else {
+    sel.innerHTML = '<option value="">شهر رو انتخاب کن</option>' + cities.map(c => `<option value="${c}">${c}</option>`).join('');
   }
-  sel.innerHTML = '<option value="">شهر رو انتخاب کن</option>' + cities.map(c => `<option value="${c}">${c}</option>`).join('');
+  populateDistrictOptions('');
+}
+
+const IRAN_DISTRICTS = {
+  "اهواز": ["کوت عبدالله","کیانپارس","زیتون کارگری","پادادشهر","ملاشیه","لشکرآباد","امانیه","نادری","گلستان","زرگان","کوی علوی","کوی سپیدار","پرواز","کیان‌آباد","سیدخلف","عین دو","بهارستان"],
+  "تهران": ["منطقه ۱","منطقه ۲","منطقه ۳","منطقه ۴","منطقه ۵","منطقه ۶","منطقه ۷","منطقه ۸","منطقه ۹","منطقه ۱۰","منطقه ۱۱","منطقه ۱۲","منطقه ۱۳","منطقه ۱۴","منطقه ۱۵","منطقه ۱۶","منطقه ۱۷","منطقه ۱۸","منطقه ۱۹","منطقه ۲۰","منطقه ۲۱","منطقه ۲۲"],
+  "مشهد": ["احمدآباد","سجاد","وکیل‌آباد","قاسم‌آباد","طرقبه","الهیه","کوثر","هاشمیه","معلم"],
+  "اصفهان": ["خوراسگان","ملک‌شهر","جلفا","لاله","رباط","نظرشرقی","بزرگمهر"],
+  "شیراز": ["معالی‌آباد","زرهی","قصردشت","گلستان","سیبویه","صدرا"],
+  "تبریز": ["ولیعصر","باغمیشه","رشدیه","منظریه","شهرک ائل‌گلی"],
+  "کرج": ["گوهردشت","عظیمیه","مهرشهر","فردیس","رجایی‌شهر"],
+  "قم": ["پردیسان","صفاییه","قدس","شهرک امام حسین","نیروگاه"]
+};
+
+function populateDistrictOptions(city){
+  const sel = document.getElementById('customerDistrictInput');
+  const districts = IRAN_DISTRICTS[city] || [];
+  if(districts.length === 0){
+    sel.innerHTML = '<option value="">برای این شهر منطقه از پیش تعریف نشده</option>';
+    sel.disabled = true;
+  } else {
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">منطقه رو انتخاب کن (اختیاری)</option>' + districts.map(d => `<option value="${d}">${d}</option>`).join('');
+  }
 }
 /* ================= end Iran provinces/cities ================= */
 
