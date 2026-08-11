@@ -1456,7 +1456,11 @@ function requestOrder(payload){
   const savedProvince = localStorage.getItem('bazarcheh_customer_province') || '';
   document.getElementById('customerProvinceInput').value = savedProvince;
   populateCityOptions(savedProvince);
-  document.getElementById('customerCityInput').value = localStorage.getItem('bazarcheh_customer_city') || '';
+    const savedCity = localStorage.getItem('bazarcheh_customer_city') || '';
+  document.getElementById('customerCityInput').value = savedCity;
+  populateDistrictOptions(savedCity);
+  document.getElementById('customerDistrictInput').value = localStorage.getItem('bazarcheh_customer_district') || '';
+  document.getElementById('customerManualAddressInput').value = localStorage.getItem('bazarcheh_customer_manual_address') || '';
   document.getElementById('customerStreetInput').value = localStorage.getItem('bazarcheh_customer_street') || '';
   document.getElementById('customerPlaqueInput').value = localStorage.getItem('bazarcheh_customer_plaque') || '';
   document.getElementById('customerUnitInput').value = localStorage.getItem('bazarcheh_customer_unit') || '';
