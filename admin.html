@@ -235,12 +235,20 @@
       <div class="plist" id="bannerList" style="margin-top:14px;"></div>
     </div>
 
-    <div class="box">
+     <div class="box">
       <h2>متن هزینه ارسال</h2>
       <div class="subtitle">این متن پایین سبد خرید به مشتری نشون داده می‌شه</div>
       <textarea id="shippingNoteInput" placeholder="مثلاً: ارسال به سراسر کشور - هزینه ارسال در محل پرداخت می‌شود"></textarea>
       <button class="btn-primary" onclick="saveShippingNote()">ذخیره</button>
       <div class="msg" id="shippingMsg"></div>
+    </div>
+
+    <div class="box">
+      <h2>درصد سود پیش‌فرض روی محصولات مغازه‌داران</h2>
+      <div class="subtitle">وقتی محصول یه مغازه‌دار رو تایید می‌کنی، این درصد پیش‌فرض پیشنهاد می‌شه (می‌تونی هر بار عوضش کنی)</div>
+      <input type="number" id="vendorMarkupInput" placeholder="مثلاً 20" min="0">
+      <button class="btn-primary" onclick="saveVendorMarkup()">ذخیره</button>
+      <div class="msg" id="vendorMarkupMsg"></div>
     </div>
 
     <div class="box">
