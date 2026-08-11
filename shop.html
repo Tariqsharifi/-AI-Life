@@ -713,10 +713,15 @@
       <option>گلستان</option><option>گیلان</option><option>لرستان</option><option>مازندران</option>
       <option>مرکزی</option><option>هرمزگان</option><option>همدان</option><option>یزد</option>
     </select>
-    <select id="customerCityInput" class="addr-input">
+        <select id="customerCityInput" class="addr-input" onchange="populateDistrictOptions(this.value)">
       <option value="">اول استان رو انتخاب کن</option>
     </select>
+    <select id="customerDistrictInput" class="addr-input">
+      <option value="">اول شهر رو انتخاب کن</option>
+    </select>
+    <input type="text" id="customerManualAddressInput" placeholder="آدرس دستی / توضیح تکمیلی (اختیاری)" class="addr-input">
     <input type="text" id="customerStreetInput" placeholder="خیابان، کوچه، مجتمع" class="addr-input">
+
     <div style="display:flex;gap:8px;">
       <input type="text" id="customerPlaqueInput" placeholder="پلاک" inputmode="numeric" class="addr-input" style="flex:1;">
       <input type="text" id="customerUnitInput" placeholder="واحد (اختیاری)" inputmode="numeric" class="addr-input" style="flex:1;">
