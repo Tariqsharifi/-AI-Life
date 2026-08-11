@@ -1106,16 +1106,28 @@ let pendingFolderOpen = false;
     }
     renderAdminList(filtered);
   }
-
 async function approveVendorProduct(id){
-  const { error } = await sb.from('products').update({ pending_approval: false }).eq('id', id);
+  const p = allProducts.find(x => x.id === id);
+  const vendorPrice = p ? Number(p.cost_price || p.price || 0) : 0;
+  const input = prompt(`قیمتی که مغازه‌دار خواسته: ${vendorPrice.toLocaleString('fa-IR')} تومان\nچند درصد سود اضافه کنم؟`, defaultMarkupPercent);
+  if(input === null) return;
+  const markup = parseFloat(input);
+  if(isNaN(markup) || markup < 0){
+    alert('یه عدد درست وارد کن');
+    return;
+  }
+  const finalPrice = Math.round(vendorPrice * (1 + markup/100) / 100) * 100;
+  const { error } = await sb.from('products').update({
+    pending_approval: false,
+    price: finalPrice,
+    cost_price: vendorPrice
+  }).eq('id', id);
   if(error){
     alert('خطا: ' + error.message);
   } else {
     loadProducts();
   }
 }
-
 
   async function toggleStock(id, newStatus){
     const { error } = await sb.from('products').update({ in_stock: newStatus }).eq('id', id);
