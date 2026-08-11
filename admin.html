@@ -479,6 +479,12 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtemJpeXNjc2Fsem9wc2R5ZHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1ODEwODMsImV4cCI6MjEwMTE1NzA4M30.tuNc5Yftdi-402RCEojcbeiDszaJcfEewqr9UADffHU";
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
 async function compressImage(file, maxDim = 1200, quality = 0.8){
   const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
   let w = bitmap.width, h = bitmap.height;
