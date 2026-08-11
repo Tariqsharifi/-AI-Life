@@ -750,9 +750,11 @@
     <button class="channel-location" id="locationBtn" onclick="getCustomerLocation()">📍 ثبت لوکیشن (اجباری)</button>
     <div class="location-status" id="locationStatus">برای ثبت سفارش، لوکیشن لازمه تا بسته دستت برسه</div>
     <div class="ct">سفارش رو از کدوم کانال ارسال کنم؟</div>
-    <button class="channel-tg" onclick="selectChannel('telegram')">ارسال در تلگرام</button>
+        <button class="channel-tg" onclick="selectChannel('telegram')">ارسال در تلگرام</button>
     <button class="channel-wa" onclick="selectChannel('whatsapp')">ارسال در واتساپ</button>
+    <button class="channel-location" style="background:#178dd1;" onclick="connectTelegramNotify()">🔔 اتصال به تلگرام برای اطلاع از وضعیت سفارش (اختیاری)</button>
     <button class="channel-cancel" onclick="closeChannelPicker()">انصراف</button>
+
   </div>
 </div>
 
