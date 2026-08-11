@@ -1891,8 +1891,7 @@ async function approveVendorProduct(id){
       </div>
     `;
   }
-
-    async function updateOrderStatus(id, newStatus){
+  async function updateOrderStatus(id, newStatus){
 
     const { error } = await sb.from('orders').update({ status: newStatus }).eq('id', id);
     if(error){
@@ -1900,7 +1899,22 @@ async function approveVendorProduct(id){
     } else {
       loadOrders();
       checkNewOrders();
+      sendTelegramStatusUpdate(id, newStatus);
     }
+  }
+
+  async function sendTelegramStatusUpdate(orderId, status){
+    try{
+      const { data: { session } } = await sb.auth.getSession();
+      await fetch('https://cmzbiyscsalzopsdydtg.supabase.co/functions/v1/send-order-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        },
+        body: JSON.stringify({ orderId, status })
+      });
+    } catch(err){ /* اگه پیام تلگرام نرسید، فقط سکوت می‌کنیم، وضعیت سفارش که خودش ثبت شده */ }
   }
 
   async function deleteOrder(id){
