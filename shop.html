@@ -1392,8 +1392,13 @@ function selectChannel(channel){
   if(!pendingOrder) return;
   const name = document.getElementById('customerNameInput').value.trim();
   const phone = document.getElementById('customerPhoneInput').value.trim();
+  const address = document.getElementById('customerAddressInput').value.trim();
   if(!name || !phone){
     alert('لطفاً اسم و شماره تماس رو وارد کن');
+    return;
+  }
+  if(!address){
+    alert('لطفاً آدرس کامل رو وارد کن');
     return;
   }
   if(!customerLat || !customerLng){
@@ -1402,11 +1407,13 @@ function selectChannel(channel){
   }
   localStorage.setItem('bazarcheh_customer_name', name);
   localStorage.setItem('bazarcheh_customer_phone', phone);
+  localStorage.setItem('bazarcheh_customer_address', address);
   lastCustomerName = name;
   lastCustomerPhone = phone;
+  lastCustomerAddress = address;
 
   const locationLine = `\nلوکیشن: https://www.google.com/maps?q=${customerLat},${customerLng}`;
-  const fullMessage = `${pendingOrder.message}\n\nاسم: ${name}\nشماره تماس: ${phone}${locationLine}`;
+  const fullMessage = `${pendingOrder.message}\n\nاسم: ${name}\nشماره تماس: ${phone}\nآدرس: ${address}${locationLine}`;
   const encoded = encodeURIComponent(fullMessage);
   document.getElementById('channelOverlay').classList.remove('open');
   if(channel === 'telegram'){
@@ -1417,7 +1424,6 @@ function selectChannel(channel){
   if(pendingOrder.onSent) pendingOrder.onSent();
   pendingOrder = null;
 }
-
 
 /* ---------- Wishlist ---------- */
 function saveWishlist(){ localStorage.setItem('bazarcheh_wishlist', JSON.stringify(wishlist)); }
