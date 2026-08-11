@@ -1330,6 +1330,7 @@ async function recordOrder(items, total, coupon){
       discount_percent: coupon ? coupon.percent : null,
       customer_name: lastCustomerName || null,
       customer_phone: lastCustomerPhone || null,
+      customer_address: lastCustomerAddress || null,
       customer_user_id: currentUser ? currentUser.id : null
     });
   } catch(e){}
