@@ -551,10 +551,10 @@ async function submitProduct(){
 
     const productCode = await generateVendorProductCode();
     const variants = variantsText.trim() ? parseVariantsText(variantsText) : [];
-
     const { error: insertError } = await sb.from('products').insert({
       name,
       price,
+      cost_price: price,
       category,
       image_url: imageUrl,
       vendor_id: currentVendor.id,
