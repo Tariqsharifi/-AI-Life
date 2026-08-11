@@ -1094,7 +1094,8 @@ let pendingFolderOpen = false;
   let filtered = allProducts;
   if(q){
     filtered = filtered.filter(p =>
-      p.name.includes(q) || p.category.includes(q) || (p.shop_name||'').includes(q) || (p.code||'').toLowerCase().includes(q.toLowerCase()) || (p.shop_phone||'').includes(q)
+  (p.name||'').includes(q) || (p.category||'').includes(q) || (p.shop_name||'').includes(q) || (p.code||'').toLowerCase().includes(q.toLowerCase()) || (p.shop_phone||'').includes(q)
+
     );
   }
   if(cat){
