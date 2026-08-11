@@ -1613,7 +1613,7 @@ async function approveVendorProduct(id){
     list.innerHTML = data.map(s => `
       <div class="prow" style="align-items:flex-start;">
         <div class="pinfo">
-          ${Object.entries(s.answers||{}).map(([k,v]) => `<div style="font-size:12.5px;margin-bottom:3px;"><b>${k}:</b> ${v}</div>`).join('')}
+          ${Object.entries(s.answers||{}).map(([k,v]) => `<div style="font-size:12.5px;margin-bottom:3px;"><b>${escapeHtml(k)}:</b> ${escapeHtml(v)}</div>`).join('')}
           <div class="pmeta">${new Date(s.created_at).toLocaleString('fa-IR')}</div>
         </div>
         <button class="btn-danger" onclick="deleteSubmission('${s.id}')">حذف</button>
