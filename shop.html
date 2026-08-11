@@ -1341,15 +1341,16 @@ let lastCustomerName = '';
 let lastCustomerPhone = '';
 let customerLat = null;
 let customerLng = null;
-
 function requestOrder(payload){
   pendingOrder = payload;
   customerLat = null;
   customerLng = null;
   const savedName = (currentProfile && currentProfile.full_name) || localStorage.getItem('bazarcheh_customer_name') || '';
   const savedPhone = (currentProfile && currentProfile.phone) || localStorage.getItem('bazarcheh_customer_phone') || '';
+  const savedAddress = localStorage.getItem('bazarcheh_customer_address') || '';
   document.getElementById('customerNameInput').value = savedName;
   document.getElementById('customerPhoneInput').value = savedPhone;
+  document.getElementById('customerAddressInput').value = savedAddress;
   const locBtn = document.getElementById('locationBtn');
   locBtn.classList.remove('got');
   locBtn.textContent = '📍 ثبت لوکیشن (اجباری)';
