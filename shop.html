@@ -1514,6 +1514,14 @@ function closeChannelPicker(){
   document.getElementById('channelOverlay').classList.remove('open');
   pendingOrder = null;
 }
+function connectTelegramNotify(){
+  const phone = document.getElementById('customerPhoneInput').value.trim().replace(/[^0-9]/g,'');
+  if(!phone){
+    alert('اول شماره تماست رو بالای همین صفحه وارد کن');
+    return;
+  }
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=${phone}`, '_blank');
+}
 
 function getCustomerLocation(){
   const statusEl = document.getElementById('locationStatus');
