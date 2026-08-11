@@ -1317,6 +1317,29 @@ async function approveVendorProduct(id){
     const { error } = await sb.from('banners').delete().eq('id', id);
     if(error){ alert('خطا: ' + error.message); } else { loadBanners(); }
   }
+  /* ---------- Vendor markup ---------- */
+  let defaultMarkupPercent = 20;
+  async function loadVendorMarkup(){
+    const { data, error } = await sb.from('settings').select('value').eq('key', 'vendor_markup_percent').maybeSingle();
+    defaultMarkupPercent = (!error && data && data.value) ? Number(data.value) : 20;
+    document.getElementById('vendorMarkupInput').value = defaultMarkupPercent;
+  }
+  async function saveVendorMarkup(){
+    const val = document.getElementById('vendorMarkupInput').value;
+    const num = parseFloat(val);
+    if(isNaN(num) || num < 0){
+      showMsg('vendorMarkupMsg', 'یه عدد درست وارد کن', false);
+      return;
+    }
+    const { error } = await sb.from('settings').upsert({ key: 'vendor_markup_percent', value: String(num) });
+    if(error){
+      showMsg('vendorMarkupMsg', 'خطا: ' + error.message, false);
+    } else {
+      defaultMarkupPercent = num;
+      showMsg('vendorMarkupMsg', 'ذخیره شد ✅', true);
+    }
+  }
+
 
   /* ---------- Shipping note ---------- */
   async function loadShippingNote(){
