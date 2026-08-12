@@ -785,6 +785,20 @@ const TELEGRAM_USERNAME = "Sharifi190";
 const WHATSAPP_NUMBER = "989927544654";
 const TELEGRAM_BOT_USERNAME = "BazarchehOrderBot";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function toEnglishDigits(str){
+  if(!str) return str;
+  const persian = '۰۱۲۳۴۵۶۷۸۹';
+  const arabic = '٠١٢٣٤٥٦٧٨٩';
+  return String(str).replace(/[۰-۹٠-٩]/g, (d) => {
+    const pIdx = persian.indexOf(d);
+    if(pIdx > -1) return pIdx;
+    const aIdx = arabic.indexOf(d);
+    if(aIdx > -1) return aIdx;
+    return d;
+  });
+}
 
 let products = [];
 let ratingsMap = {};
