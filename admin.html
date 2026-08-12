@@ -1381,6 +1381,55 @@ async function approveVendorProduct(id){
     }
   }
 
+  /* ---------- Broadcast to Telegram subscribers ---------- */
+  async function sendBroadcast(){
+    const text = document.getElementById('broadcastText').value.trim();
+    const fileInput = document.getElementById('broadcastImage');
+    const file = fileInput.files[0];
+
+    if(!text){
+      showMsg('broadcastMsg', 'متن پیام رو بنویس', false);
+      return;
+    }
+
+    showMsg('broadcastMsg', 'در حال ارسال...', true);
+
+    let imageUrl = null;
+    if(file){
+      const fileName = `broadcast_${Date.now()}.jpg`;
+      const compressedBlob = await compressImage(file);
+      const { error: uploadError } = await sb.storage.from('product-images').upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
+      if(uploadError){
+        showMsg('broadcastMsg', 'خطا در آپلود عکس: ' + uploadError.message, false);
+        return;
+      }
+      const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
+      imageUrl = urlData.publicUrl;
+    }
+
+    const { data: { session } } = await sb.auth.getSession();
+    try{
+      const res = await fetch('https://cmzbiyscsalzopsdydtg.supabase.co/functions/v1/broadcast-notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        },
+        body: JSON.stringify({ message: text, imageUrl })
+      });
+      const result = await res.json();
+      if(!res.ok || result.error){
+        showMsg('broadcastMsg', 'خطا: ' + (result.error || 'مشکلی پیش اومد'), false);
+      } else {
+        showMsg('broadcastMsg', `پیام برای ${result.sent} نفر ارسال شد ✅` + (result.failed > 0 ? ` (${result.failed} نفر ناموفق)` : ''), true);
+        document.getElementById('broadcastText').value = '';
+        fileInput.value = '';
+      }
+    } catch(err){
+      showMsg('broadcastMsg', 'خطا در اتصال: ' + err.message, false);
+    }
+  }
+
   /* ---------- Blog ---------- */
   let allBlogPosts = [];
 
