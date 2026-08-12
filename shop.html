@@ -819,6 +819,23 @@ function applyDarkMode(isDark){
   const btn = document.getElementById('darkModeBtn');
   if(btn) btn.textContent = isDark ? '☀️' : '🌙';
 }
+  function subscribeTelegram(){
+  const already = localStorage.getItem('bazarcheh_telegram_subscribed') === '1';
+  if(already){
+    alert('قبلاً وصل شدی 🔔 هر خبر و تخفیفی باشه همونجا تو تلگرام برات میاد.');
+    return;
+  }
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=sub`, '_blank');
+  localStorage.setItem('bazarcheh_telegram_subscribed', '1');
+  updateBellIcon();
+}
+function updateBellIcon(){
+  const btn = document.getElementById('bellIconBtn');
+  if(!btn) return;
+  const subscribed = localStorage.getItem('bazarcheh_telegram_subscribed') === '1';
+  btn.classList.toggle('subscribed', subscribed);
+}
+
 function toggleDarkMode(){
   const isDark = !document.body.classList.contains('dark');
   localStorage.setItem('bazarcheh_dark_mode', isDark ? '1' : '0');
