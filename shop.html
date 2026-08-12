@@ -1561,10 +1561,9 @@ function getCustomerLocation(){
     { enableHighAccuracy: true, timeout: 10000 }
   );
 }
-function selectChannel(channel){
-  if(!pendingOrder) return;
+function finalizeOrder(){
   const name = document.getElementById('customerNameInput').value.trim();
-  const phone = document.getElementById('customerPhoneInput').value.trim();
+  const phone = toEnglishDigits(document.getElementById('customerPhoneInput').value.trim());
   const province = document.getElementById('customerProvinceInput').value;
   const city = document.getElementById('customerCityInput').value;
   const district = document.getElementById('customerDistrictInput').value;
@@ -1576,19 +1575,19 @@ function selectChannel(channel){
 
   if(!name || !phone){
     alert('لطفاً اسم و شماره تماس رو وارد کن');
-    return;
+    return null;
   }
   if(!province || !city || !street || !plaque){
     alert('لطفاً استان، شهر، خیابان و پلاک رو کامل وارد کن');
-    return;
+    return null;
   }
   if(postal && postal.length !== 10){
     alert('کد پستی باید ۱۰ رقم باشه');
-    return;
+    return null;
   }
   if(!customerLat || !customerLng){
     alert('برای ثبت سفارش باید روی دکمه «ثبت لوکیشن» بزنی و اجازه بدی');
-    return;
+    return null;
   }
 
   const address = `${province}، ${city}${district ? '، ' + district : ''}، ${street}، پلاک ${plaque}${unit ? '، واحد ' + unit : ''}${manualAddress ? '، ' + manualAddress : ''}${postal ? '، کد پستی: ' + postal : ''}`;
@@ -1608,6 +1607,17 @@ function selectChannel(channel){
   lastCustomerPhone = phone;
   lastCustomerAddress = address;
 
+  if(pendingOrder && pendingOrder.onSent) pendingOrder.onSent();
+
+  return { name, phone, address };
+}
+
+function selectChannel(channel){
+  if(!pendingOrder) return;
+  const result = finalizeOrder();
+  if(!result) return;
+  const { name, phone, address } = result;
+
   const locationLine = `\nلوکیشن: https://www.google.com/maps?q=${customerLat},${customerLng}`;
   const fullMessage = `${pendingOrder.message}\n\nاسم: ${name}\nشماره تماس: ${phone}\nآدرس: ${address}${locationLine}`;
   const encoded = encodeURIComponent(fullMessage);
@@ -1617,10 +1627,8 @@ function selectChannel(channel){
   } else {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank');
   }
-  if(pendingOrder.onSent) pendingOrder.onSent();
   pendingOrder = null;
 }
-
 
 /* ---------- Wishlist ---------- */
 function saveWishlist(){ localStorage.setItem('bazarcheh_wishlist', JSON.stringify(wishlist)); }
