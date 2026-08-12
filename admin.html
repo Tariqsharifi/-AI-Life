@@ -141,6 +141,16 @@
 
     <!-- Panel -->
   <div id="panelBox">
+    <div class="box" id="broadcastBox">
+      <h2>📢 اطلاع‌رسانی به مشتری‌ها</h2>
+      <div class="subtitle">این پیام برای همه‌ی مشتری‌هایی که تلگرامشون رو وصل کردن ارسال می‌شه</div>
+      <label>متن پیام</label>
+      <textarea id="broadcastText" placeholder="مثلاً: جنس جدید اومد! سری بزن به فروشگاه 🛍"></textarea>
+      <label>عکس محصول (اختیاری)</label>
+      <input type="file" id="broadcastImage" accept="image/*">
+      <button class="btn-primary" onclick="sendBroadcast()">ارسال به همه مشتری‌ها</button>
+      <div class="msg" id="broadcastMsg"></div>
+    </div>
 
     <!-- Pending vendor products - always at top, no digging through folders -->
      <div class="box pending-box" id="pendingBox" style="display:none;">
