@@ -1529,12 +1529,21 @@ function closeChannelPicker(){
   pendingOrder = null;
 }
 function connectTelegramNotify(){
-  const phone = document.getElementById('customerPhoneInput').value.trim().replace(/[^0-9]/g,'');
-  if(!phone){
-    alert('اول شماره تماست رو بالای همین صفحه وارد کن');
+  if(!pendingOrder){
+    const phone = toEnglishDigits(document.getElementById('customerPhoneInput').value.trim()).replace(/[^0-9]/g,'');
+    if(!phone){
+      alert('اول شماره تماست رو بالای همین صفحه وارد کن');
+      return;
+    }
+    window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=${phone}`, '_blank');
     return;
   }
-  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=${phone}`, '_blank');
+  const result = finalizeOrder();
+  if(!result) return;
+  const phoneDigits = result.phone.replace(/[^0-9]/g,'');
+  document.getElementById('channelOverlay').classList.remove('open');
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=${phoneDigits}`, '_blank');
+  pendingOrder = null;
 }
 
 function getCustomerLocation(){
