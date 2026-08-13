@@ -1417,14 +1417,17 @@ async function approveVendorProduct(id){
         },
         body: JSON.stringify({ message: text, imageUrl })
       });
-      const result = await res.json();
+            const rawText = await res.text();
+      let result = {};
+      try { result = JSON.parse(rawText); } catch(e) {}
       if(!res.ok || result.error){
-        showMsg('broadcastMsg', 'خطا: ' + (result.error || 'مشکلی پیش اومد'), false);
+        showMsg('broadcastMsg', `خطا (کد ${res.status}): ` + (result.error || rawText.slice(0,200) || 'مشکلی پیش اومد'), false);
       } else {
         showMsg('broadcastMsg', `پیام برای ${result.sent} نفر ارسال شد ✅` + (result.failed > 0 ? ` (${result.failed} نفر ناموفق)` : ''), true);
         document.getElementById('broadcastText').value = '';
         fileInput.value = '';
       }
+
     } catch(err){
       showMsg('broadcastMsg', 'خطا در اتصال: ' + err.message, false);
     }
