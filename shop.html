@@ -2377,9 +2377,10 @@ async function loadComments(productId){
 
   listEl.innerHTML = data.map(c => `
     <div class="comment-item">
-      <span class="cname">${c.user_name}</span>
+            <span class="cname">${escapeHtml(c.user_name)}</span>
       ${c.rating ? `<span class="cstars">${'★'.repeat(c.rating)}${'☆'.repeat(5-c.rating)}</span>` : ''}
-      <div class="ctext">${c.comment_text}</div>
+      <div class="ctext">${escapeHtml(c.comment_text)}</div>
+
     </div>
   `).join('');
 }
