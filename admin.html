@@ -2183,7 +2183,7 @@ async function approveVendorProduct(id){
     list.innerHTML = data.map(c => `
       <div class="comment-admin-item">
         <div class="ca-top">
-          <span class="ca-name">${c.user_name}${c.rating ? ' · ' + '★'.repeat(c.rating) : ''}</span>
+                   <span class="ca-name">${escapeHtml(c.user_name)}${c.rating ? ' · ' + '★'.repeat(c.rating) : ''}</span>
           <span class="ca-status ${c.approved ? 'approved' : 'pending'}">${c.approved ? 'تاییدشده' : 'در انتظار'}</span>
         </div>
         <div class="ca-product">محصول: ${c.products ? c.products.name : '—'}</div>
