@@ -1953,12 +1953,13 @@ async function approveVendorProduct(id){
       </div>
     `;
   }
-  async function updateOrderStatus(id, newStatus){
+    async function updateOrderStatus(id, newStatus){
 
     const { error } = await sb.from('orders').update({ status: newStatus }).eq('id', id);
     if(error){
       alert('خطا: ' + error.message);
     } else {
+      sendTelegramStatusUpdate(id, newStatus);
       loadOrders();
       checkNewOrders();
     }
