@@ -1086,6 +1086,11 @@ const WHATSAPP_NUMBER = "989927544654";
 const TELEGRAM_BOT_USERNAME = "BazarchehOrderBot";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
 function toEnglishDigits(str){
   if(!str) return str;
   const persian = '۰۱۲۳۴۵۶۷۸۹';
