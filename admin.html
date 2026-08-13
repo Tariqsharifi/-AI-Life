@@ -2031,43 +2031,52 @@ async function approveVendorProduct(id){
     document.getElementById('editOverlay').classList.remove('open');
     currentEditId = null;
   }
-  async function saveMainFields(){
+    async function saveMainFields(){
     const name = document.getElementById('editName').value.trim();
     const code = document.getElementById('editCode').value.trim();
-        const price = document.getElementById('editPrice').value.replace(/[^0-9]/g, '');
+    const price = document.getElementById('editPrice').value.replace(/[^0-9]/g, '');
     const cost = document.getElementById('editCost').value.replace(/[^0-9]/g, '');
     const category = document.getElementById('editCat').value.trim();
     const shopPhone = document.getElementById('editShopPhone').value.trim();
-
     const description = document.getElementById('editDescription').value.trim();
     const fileInput = document.getElementById('editMainImage');
-    const file = fileInput.files[0];
+    const files = fileInput.files;
 
     if(!name || !price || !category){
       showMsg('editMainMsg', 'اسم، قیمت و دسته‌بندی را پر کن', false);
       return;
     }
 
-  const updateData = {
-  name, code: code || null, price: parseInt(price), category,
-  description: description || null,
-  cost_price: cost ? parseInt(cost) : 0,
-  shop_phone: shopPhone || null
-};
-    
-    if(file){
-      const fileName = `${Date.now()}.jpg`;
-      const compressedBlob = await compressImage(file);
-      const { error: uploadError } = await sb.storage
-        .from('product-images')
-        .upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
+    const updateData = {
+      name, code: code || null, price: parseInt(price), category,
+      description: description || null,
+      cost_price: cost ? parseInt(cost) : 0,
+      shop_phone: shopPhone || null
+    };
 
-      if(uploadError){
-        showMsg('editMainMsg', 'خطا در آپلود عکس: ' + uploadError.message, false);
-        return;
+    if(files && files.length > 0){
+      const p = allProducts.find(x => x.id===currentEditId);
+      let gallery = [...(p ? (p.gallery_images || []) : [])];
+      for(let i = 0; i < files.length; i++){
+        const f = files[i];
+        const fileName = `${Date.now()}_${i}.jpg`;
+        const compressedBlob = await compressImage(f);
+        const { error: uploadError } = await sb.storage
+          .from('product-images')
+          .upload(fileName, compressedBlob, { contentType: 'image/jpeg' });
+
+        if(uploadError){
+          showMsg('editMainMsg', 'خطا در آپلود عکس: ' + uploadError.message, false);
+          return;
+        }
+        const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
+        if(i === 0){
+          updateData.image_url = urlData.publicUrl;
+        } else {
+          gallery.push(urlData.publicUrl);
+        }
       }
-      const { data: urlData } = sb.storage.from('product-images').getPublicUrl(fileName);
-      updateData.image_url = urlData.publicUrl;
+      updateData.gallery_images = gallery;
     }
 
     const { error } = await sb.from('products').update(updateData).eq('id', currentEditId);
