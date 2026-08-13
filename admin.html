@@ -1409,7 +1409,7 @@ async function approveVendorProduct(id){
 
     const { data: { session } } = await sb.auth.getSession();
     try{
-      const res = await fetch('https://cmzbiyscsalzopsdydtg.supabase.co/functions/v1/broadcast-notify', {
+      const res = await fetch('https://cmzbiyscsalzopsdydtg.supabase.co/functions/v1/broadcast-notify-', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
