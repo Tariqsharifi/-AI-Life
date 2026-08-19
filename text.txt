@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0; url=shop.html">
+<title>طلوع کالا</title>
+</head>
+<body>
+<script>location.replace('shop.html');</script>
+<p>در حال انتقال به فروشگاه... اگر منتقل نشدید <a href="shop.html">اینجا</a> را بزنید.</p>
+</body>
+</html>
