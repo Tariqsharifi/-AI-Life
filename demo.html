@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طلوع کالا | نمونه طراحی</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --brand:#e4002b;
+    --brand-dark:#c40025;
+    --brand-light:#fff0f2;
+    --ink:#242424;
+    --gray:#767676;
+    --line:#eaeaea;
+    --bg:#f5f5f7;
+    --gold:#f8b400;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Vazirmatn', Tahoma, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+
+  /* ===== Top strip ===== */
+  .topstrip{
+    background:var(--ink);
+    color:#ccc;
+    font-size:12px;
+    padding:6px 16px;
+    display:flex;
+    justify-content:space-between;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+  .topstrip span{margin-inline-start:14px;}
+
+  /* ===== Header ===== */
+  header{
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:50;
+  }
+  .header-inner{
+    max-width:1200px; margin:0 auto;
+    padding:10px 14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .logo{
+    font-weight:800; font-size:20px; color:var(--brand);
+    display:flex; align-items:center; gap:6px;
+    flex-shrink:0;
+  }
+  .logo .sun{
+    width:22px;height:22px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, var(--gold), var(--brand));
+    flex-shrink:0;
+  }
+  .search-bar{
+    flex:1;
+    display:flex;
+    border:1.5px solid var(--brand);
+    border-radius:6px;
+    overflow:hidden;
+    height:40px;
+  }
+  .search-bar input{
+    flex:1; border:0; outline:0; padding:0 12px;
+    font-family:inherit; font-size:13px; background:#fff;
+  }
+  .search-bar button{
+    background:var(--brand); border:0; color:#fff;
+    width:44px; cursor:pointer; font-size:16px;
+  }
+  .header-icons{
+    display:flex; gap:16px; align-items:center; flex-shrink:0;
+  }
+  .header-icons .icon{
+    display:flex; flex-direction:column; align-items:center;
+    font-size:10px; color:var(--gray); gap:2px; cursor:pointer;
+  }
+  .header-icons .icon .sym{font-size:19px;}
+  .cart-count{
+    background:var(--brand); color:#fff; font-size:9px;
+    border-radius:8px; padding:0 4px; position:relative; top:-16px; right:-8px;
+  }
+
+  /* mobile search collapses under logo row on small screens */
+  @media (max-width:640px){
+    .header-inner{flex-wrap:wrap;}
+    .search-bar{order:3; width:100%; flex-basis:100%;}
+  }
+
+  /* ===== Category rail ===== */
+  .cat-rail{
+    max-width:1200px; margin:0 auto;
+    display:flex; gap:18px;
+    overflow-x:auto;
+    padding:14px 14px 6px;
+    scrollbar-width:none;
+  }
+  .cat-rail::-webkit-scrollbar{display:none;}
+  .cat-item{
+    flex-shrink:0; width:68px;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    text-align:center; cursor:pointer;
+  }
+  .cat-item .circle{
+    width:56px; height:56px; border-radius:50%;
+    background:#fff; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px;
+    transition:transform .15s, border-color .15s;
+  }
+  .cat-item:hover .circle{border-color:var(--brand); transform:translateY(-2px);}
+  .cat-item span{font-size:11px; color:var(--ink);}
+
+  /* ===== Banner slider ===== */
+  .banner-wrap{
+    max-width:1200px; margin:10px auto; padding:0 14px;
+  }
+  .banner{
+    position:relative;
+    border-radius:10px; overflow:hidden;
+    aspect-ratio:1.55/1;
+    background:linear-gradient(120deg,#ff5b6a,var(--brand) 60%, var(--brand-dark));
+    color:#fff; display:flex; flex-direction:column; justify-content:center;
+    padding:26px;
+  }
+  .banner .badge{
+    align-self:flex-start;
+    background:var(--gold); color:var(--ink);
+    font-size:11px; font-weight:700;
+    padding:4px 10px; border-radius:20px; margin-bottom:10px;
+  }
+  .banner h2{font-size:22px; font-weight:800; margin-bottom:6px;}
+  .banner p{font-size:12px; opacity:.9; max-width:60%;}
+  .banner .dots{
+    position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+    display:flex; gap:5px;
+  }
+  .banner .dots span{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.5);}
+  .banner .dots span.active{background:#fff; width:16px; border-radius:4px;}
+
+  /* ===== Section header ===== */
+  .section{max-width:1200px; margin:0 auto; padding:18px 14px 4px;}
+  .section-head{
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;
+  }
+  .section-head h3{font-size:15px; font-weight:700;}
+  .section-head .more{font-size:11px; color:var(--brand); font-weight:600;}
+  .timer{
+    display:flex; align-items:center; gap:6px; font-size:11px; color:var(--gray);
+  }
+  .timer .box{
+    background:var(--ink); color:#fff; padding:2px 6px; border-radius:4px;
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ===== Product grid ===== */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+  @media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr);}}
+  @media(min-width:820px){.grid{grid-template-columns:repeat(5,1fr);}}
+
+  .card{
+    background:#fff; border:1px solid var(--line); border-radius:8px;
+    padding:10px; position:relative; cursor:pointer;
+    transition:box-shadow .15s, transform .15s;
+  }
+  .card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08); transform:translateY(-2px);}
+  .card .imgbox{
+    aspect-ratio:1/1; border-radius:6px; margin-bottom:8px;
+    background:linear-gradient(135deg,#f1f1f3,#e4e4e8);
+    display:flex; align-items:center; justify-content:center;
+    color:#c9c9ce; font-size:11px;
+    position:relative; overflow:hidden;
+  }
+  .discount-tag{
+    position:absolute; top:6px; right:6px;
+    background:var(--brand); color:#fff; font-size:11px; font-weight:700;
+    padding:2px 6px; border-radius:4px;
+  }
+  .card .title{
+    font-size:12px; line-height:1.6; height:38px; overflow:hidden;
+    margin-bottom:6px;
+  }
+  .price-row{display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;}
+  .old-price{font-size:11px; color:#aaa; text-decoration:line-through;}
+  .new-price{font-size:14px; font-weight:800; color:var(--ink);}
+  .toman{font-size:10px; color:var(--gray);}
+  .rating{
+    display:flex; align-items:center; gap:4px; margin-top:6px; font-size:10px; color:var(--gray);
+  }
+  .rating .stars{color:var(--gold); letter-spacing:1px; font-size:11px;}
+  .free-shipping{
+    display:inline-block; margin-top:6px; font-size:9px;
+    background:#e8f7ec; color:#1c8a3f; padding:2px 6px; border-radius:4px;
+  }
+
+  footer{
+    margin-top:30px; background:#fff; border-top:1px solid var(--line);
+    padding:24px 14px; text-align:center; font-size:11px; color:var(--gray);
+  }
+  footer .flogo{color:var(--brand); font-weight:800; font-size:15px; margin-bottom:6px;}
+</style>
+</head>
+<body>
+
+<div class="topstrip">
+  <div>
+    <span>🚚 ارسال سریع در اهواز و خوزستان</span>
+    <span>💬 پشتیبانی: ۹ صبح تا ۱۱ شب</span>
+  </div>
+  <div><span>ورود فروشندگان</span></div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo"><span class="sun"></span> طلوع کالا</div>
+    <div class="search-bar">
+      <input type="text" placeholder="جستجو در طلوع کالا...">
+      <button>🔍</button>
+    </div>
+    <div class="header-icons">
+      <div class="icon"><span class="sym">👤</span>حساب من</div>
+      <div class="icon" style="position:relative"><span class="sym">🛒</span>سبد خرید<span class="cart-count">۳</span></div>
+    </div>
+  </div>
+
+  <div class="cat-rail">
+    <div class="cat-item"><div class="circle">📱</div><span>موبایل</span></div>
+    <div class="cat-item"><div class="circle">👗</div><span>پوشاک</span></div>
+    <div class="cat-item"><div class="circle">🏠</div><span>خانه</span></div>
+    <div class="cat-item"><div class="circle">💄</div><span>آرایشی</span></div>
+    <div class="cat-item"><div class="circle">🍼</div><span>کودک</span></div>
+    <div class="cat-item"><div class="circle">🎮</div><span>گیمینگ</span></div>
+    <div class="cat-item"><div class="circle">🍳</div><span>لوازم خانگی</span></div>
+    <div class="cat-item"><div class="circle">🚗</div><span>لوازم خودرو</span></div>
+    <div class="cat-item"><div class="circle">💻</div><span>لپ‌تاپ</span></div>
+    <div class="cat-item"><div class="circle">⚽</div><span>ورزش</span></div>
+  </div>
+</header>
+
+<div class="banner-wrap">
+  <div class="banner">
+    <span class="badge">فقط امروز</span>
+    <h2>جشنواره طلوع | تا ۴۰٪ تخفیف</h2>
+    <p>روی صدها کالای منتخب فروشندگان خوزستان</p>
+    <div class="dots"><span class="active"></span><span></span><span></span></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <h3>⚡ پیشنهاد شگفت‌انگیز</h3>
+    <div class="timer">تا پایان: <span class="box">۰۲</span>:<span class="box">۱۴</span>:<span class="box">۵۹</span></div>
+  </div>
+  <div class="grid" id="grid-flash"></div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <h3>محصولات پرفروش</h3>
+    <span class="more">مشاهده همه ←</span>
+  </div>
+  <div class="grid" id="grid-best"></div>
+</div>
+
+<footer>
+  <div class="flogo">🌅 طلوع کالا</div>
+  این یک نمونه‌ی طراحی (Demo) برای بررسی حال‌وهوای بصری است — هنوز به فروشگاه اصلی وصل نشده.
+</footer>
+
+<script>
+const demoProducts = [
+  {t:"هدفون بی‌سیم مدل X200 با کیفیت صدای بالا", p:"۱٬۲۵۰٬۰۰۰", op:"۱٬۸۹۰٬۰۰۰", d:"۳۴٪", r:"۴.۵", s:true},
+  {t:"پاوربانک ۲۰۰۰۰ میلی‌آمپر شارژ سریع", p:"۸۹۰٬۰۰۰", op:"", d:"", r:"۴.۸", s:true},
+  {t:"کفش ورزشی مردانه مدل کوهستان", p:"۱٬۴۵۰٬۰۰۰", op:"۲٬۱۰۰٬۰۰۰", d:"۳۱٪", r:"۴.۲", s:false},
+  {t:"عطر جیبی مردانه ۲۵ میل", p:"۳۹۰٬۰۰۰", op:"", d:"", r:"۴.۰", s:true},
+  {t:"ساعت هوشمند سری اسپرت با ضدآب", p:"۲٬۱۰۰٬۰۰۰", op:"۲٬۹۹۰٬۰۰۰", d:"۳۰٪", r:"۴.۶", s:true},
+];
+
+function cardHTML(p){
+  return `
+    <div class="card">
+      ${p.d ? `<div class="discount-tag">${p.d}</div>` : ""}
+      <div class="imgbox">تصویر محصول</div>
+      <div class="title">${p.t}</div>
+      <div class="price-row">
+        ${p.op ? `<span class="old-price">${p.op}</span>` : ""}
+        <span class="new-price">${p.p}</span>
+        <span class="toman">تومان</span>
+      </div>
+      <div class="rating"><span class="stars">★★★★★</span> ${p.r}</div>
+      ${p.s ? `<div class="free-shipping">ارسال رایگان</div>` : ""}
+    </div>`;
+}
+
+document.getElementById('grid-flash').innerHTML = demoProducts.slice(0,5).map(cardHTML).join('');
+document.getElementById('grid-best').innerHTML = [...demoProducts].reverse().map(cardHTML).join('');
+</script>
+
+</body>
+</html>
