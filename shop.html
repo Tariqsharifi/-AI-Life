@@ -2466,7 +2466,7 @@ function showSearchSuggestions(q){
   if(hint) hint.style.display = 'none';
   box.innerHTML = matches.map(p => `
     <div class="search-suggestion-item" onclick="selectSearchSuggestion('${p.id}')">
-      <img src="${p.img || ''}"onerror="this.onerror=null;this.style.background='var(--tint1)'; this.src='';">
+      <img src="${p.img || ''}" onerror="this.onerror=null; this.style.background='var(--tint1)'; this.src='';">
       <div>
         <div class="ssi-name">${p.name}</div>
         <div class="ssi-price">${Number(p.price).toLocaleString('fa-IR')} تومان</div>
