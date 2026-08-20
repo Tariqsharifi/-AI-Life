@@ -1205,6 +1205,28 @@
   /* header: gains elevation once the page scrolls under it */
   header{ transition:box-shadow .25s ease; }
   header.scrolled{ box-shadow:var(--shadow-md) !important; }
+ 
+  /* Moon glow additions */
+  .d3-hero-moon{ width:150px; height:128px; left:-8px; top:48%; }
+  @keyframes moonGlowPulse{ 0%,100%{ opacity:.55; } 50%{ opacity:.85; } }
+  @keyframes moonTwinkle{ 0%,100%{ opacity:.25; } 50%{ opacity:1; } }
+  .moon-glow-big{ animation:moonGlowPulse 5s ease-in-out infinite; }
+  .moon-glow-mid{ animation:moonGlowPulse 4s ease-in-out infinite .3s; }
+  .moon-particle{ animation:moonTwinkle 2.6s ease-in-out infinite; }
+  .d3-hero-card{ position:relative; }
+  .d3-hero-card::after{
+    content:''; position:absolute; width:220px; height:220px; border-radius:50%;
+    background:radial-gradient(circle, rgba(167,139,250,0.35), transparent 70%);
+    left:-60px; top:-40px; filter:blur(30px); pointer-events:none; z-index:0;
+    animation:moonGlowPulse 6s ease-in-out infinite;
+  }
+  @keyframes chipAmbient{
+    0%,100%{ box-shadow:0 0 20px rgba(124,58,237,0.35), inset 0 0 12px rgba(124,58,237,0.1); }
+    50%{ box-shadow:0 0 28px rgba(124,58,237,0.5), inset 0 0 14px rgba(124,58,237,0.15); }
+  }
+  body.dark .chip-circle{ animation:chipAmbient 5s ease-in-out infinite; }
+  body.dark .card:hover{ box-shadow:0 0 32px rgba(167,139,250,0.35), 0 8px 28px rgba(0,0,0,0.4); }
+ 
 </style>
 </head>
 <body>
