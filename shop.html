@@ -2780,9 +2780,14 @@ function updateBadges(){
   const wishBadge = document.getElementById('wishBadge');
   wishBadge.textContent = wishlist.length;
   wishBadge.style.display = wishlist.length>0 ? 'flex' : 'none';
-
   const menuBadge = document.getElementById('menuBadge');
   if(menuBadge) menuBadge.style.display = (cartCount>0 || wishlist.length>0) ? 'block' : 'none';
+
+  const cartBadgeMenu = document.getElementById('cartBadgeMenu');
+  if(cartBadgeMenu){
+    cartBadgeMenu.textContent = cartCount;
+    cartBadgeMenu.style.display = cartCount>0 ? 'flex' : 'none';
+  }
 }
 
 function openCart(){
