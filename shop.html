@@ -2627,10 +2627,9 @@ function finalizeOrder(){
   const district = document.getElementById('customerDistrictInput').value;
   const manualAddress = document.getElementById('customerManualAddressInput').value.trim();
   const street = document.getElementById('customerStreetInput').value.trim();
-  const plaque = document.getElementById('customerPlaqueInput').value.trim();
-  const unit = document.getElementById('customerUnitInput').value.trim();
-  const postal = document.getElementById('customerPostalInput').value.trim();
-
+    const plaque = toEnglishDigits(document.getElementById('customerPlaqueInput').value.trim());
+  const unit = toEnglishDigits(document.getElementById('customerUnitInput').value.trim());
+  const postal = toEnglishDigits(document.getElementById('customerPostalInput').value.trim());
   if(!name || !phone){
     alert('لطفاً اسم و شماره تماس رو وارد کن');
     return null;
