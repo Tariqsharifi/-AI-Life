@@ -2799,15 +2799,27 @@ function renderGrid(){
       </div>
     </div>
   `).join('');
-
   const loadMoreWrap = document.getElementById('loadMoreWrap');
   if(loadMoreWrap){
     loadMoreWrap.innerHTML = filtered.length > renderedCount
-      ? `<button onclick="renderedCount+=24;renderGrid();" style="background:#D4A017;color:#2b1a05;font-weight:800;padding:12px 28px;border:none;border-radius:12px;font-size:14px;">نمایش بیشتر</button>`
+      ? `<div style="padding:16px;opacity:0.6;font-size:13px;">در حال بارگذاری محصولات بیشتر...</div>`
       : '';
   }
 }
+
+const loadMoreObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting && renderedCount < lastFilteredCount){
+      renderedCount += 20;
+      renderGrid();
+    }
+  });
+}, { rootMargin: '400px' });
+const loadMoreWrapEl = document.getElementById('loadMoreWrap');
+if(loadMoreWrapEl) loadMoreObserver.observe(loadMoreWrapEl);
+
 searchInput.addEventListener('input', (e)=>{
+
   query = e.target.value;
   renderGrid();
   showSearchSuggestions(query);
