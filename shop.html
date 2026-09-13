@@ -2762,8 +2762,8 @@ function renderGrid(){
     return matchCat && matchQuery;
   });
   filtered = sortProducts(filtered);
-
   metaLine.textContent = `${filtered.length.toLocaleString('fa-IR')} کالا پیدا شد`;
+  lastFilteredCount = filtered.length;
 
   if(filtered.length===0){
     grid.innerHTML = `<div class="empty"><div class="big">🔍</div>هیچ کالایی پیدا نشد<br>عبارت دیگری را امتحان کنید</div>`;
