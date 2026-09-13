@@ -2800,9 +2800,9 @@ function renderGrid(append){
       </div>
     </div>
   `).join('');
-
   if(append){
     grid.insertAdjacentHTML('beforeend', cardsHtml);
+    isLoadingMore = false;
   } else {
     grid.innerHTML = cardsHtml;
   }
