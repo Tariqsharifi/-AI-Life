@@ -2576,7 +2576,7 @@ const { data, error } = await sb.from('products').select('*').or('pending_approv
 
   products = (data || []).map(p => ({
     id: p.id, name: p.name, code: p.code, cat: p.category, price: p.price,
-    shop: p.shop_name || 'طلوع کالا', img: p.image_url, emoji: '📦',
+     shop: p.shop_name || 'طلوع کالا', img: p.image_url, thumb: p.thumbnail_url || p.image_url, emoji: '📦',
     inStock: p.in_stock !== false, orderCount: p.order_count || 0,
     discount: p.discount_percent || 0, createdAt: p.created_at,
     variantLabel: p.variant_label || null, variants: p.variants || [],
