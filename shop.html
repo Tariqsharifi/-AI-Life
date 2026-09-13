@@ -2108,7 +2108,8 @@ function toEnglishDigits(str){
 let products = [];
 let ratingsMap = {};
 let activeCat = "همه";
-  let renderedCount = 24;
+let renderedCount = 20;
+let lastFilteredCount = 0;
 let query = "";
 let cart = JSON.parse(localStorage.getItem('bazarcheh_cart') || '[]');
 let wishlist = JSON.parse(localStorage.getItem('bazarcheh_wishlist') || '[]');
