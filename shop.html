@@ -2816,10 +2816,10 @@ function renderGrid(append){
 
 const loadMoreObserver = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
-    if(entry.isIntersecting && renderedCount < lastFilteredCount){
+      if(entry.isIntersecting && renderedCount < lastFilteredCount){
       renderedCount += 20;
-      renderGrid();
-    }
+      renderGrid(true);
+      }
   });
 }, { rootMargin: '400px' });
 const loadMoreWrapEl = document.getElementById('loadMoreWrap');
