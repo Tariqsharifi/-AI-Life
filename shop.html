@@ -3124,7 +3124,7 @@ function renderWishlistDrawer(){
   }
   body.innerHTML = items.map(p => `
     <div class="wish-item">
-      <img src="${p.img||''}" onerror="this.style.background='var(--placeholder)'; this.src='';">
+           <img src="${p.thumb||''}" onerror="this.style.background='var(--placeholder)'; this.src='';"> 
       <div class="wi-info">
         <div class="wi-name">${p.name}</div>
         <div class="wi-price">${fmtPrice(getEffectivePrice(p))} تومان</div>
