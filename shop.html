@@ -2501,7 +2501,7 @@ function openCompareOverlay(){
       return `
         <div class="compare-card">
           <button class="cc-remove" onclick="toggleCompare('${p.id}'); openCompareOverlay();">✕</button>
-          ${p.img ? `<img src="${p.img}">` : ''}
+          ${p.thumb ? `<img src="${p.thumb}">` : ''}
           <div class="cc-name">${p.name}${p.code ? ` [${p.code}]` : ''}</div>
           <div class="cc-row"><span>قیمت</span><b>${fmtPrice(getEffectivePrice(p))} تومان</b></div>
           <div class="cc-row"><span>مغازه</span><b>${p.shop}</b></div>
