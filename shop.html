@@ -2754,7 +2754,7 @@ function getPriceHtml(p, variantName){
   return `${fmtPrice(eff)} <small>تومان</small>`;
 }
 
-function renderGrid(){
+function renderGrid(append){
   let filtered = products.filter(p=>{
     const matchCat = activeCat==="همه" || p.cat===activeCat;
     const matchQuery = query.trim()==="" ||
