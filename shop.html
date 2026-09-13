@@ -3230,7 +3230,7 @@ function renderCartDrawer(){
     if(!p) return '';
     return `
       <div class="cart-item">
-        <img src="${p.img||''}" onerror="this.style.background='var(--placeholder)'; this.src='';">
+       <img src="${p.thumb||''}" onerror="this.style.background='var(--placeholder)'; this.src='';">
         <div class="ci-info">
           <div class="ci-name">${p.name}</div>
           ${c.variant ? `<div class="ci-variant">${p.variantLabel || 'گزینه'}: ${c.variant}</div>` : ''}
