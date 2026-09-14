@@ -2826,14 +2826,18 @@ function renderGrid(){
   grid.innerHTML = filteredCache.slice(renderStart, renderEnd).map((p,i)=>buildCardHtml(p, renderStart+i)).join('');
   updateLoadMoreUI();
 }
-
 function appendNext(){
   if(renderEnd >= filteredCache.length) return;
   const nextEnd = Math.min(renderEnd + CHUNK, filteredCache.length);
   const html = filteredCache.slice(renderEnd, nextEnd).map((p,i)=>buildCardHtml(p, renderEnd+i)).join('');
   grid.insertAdjacentHTML('beforeend', html);
   renderEnd = nextEnd;
-  scheduleTopTrim();
+  if((renderEnd - renderStart) > HARD_CEILING){
+    clearTimeout(topTrimTimer);
+    trimTopNow();
+  } else {
+    scheduleTopTrim();
+  }
   updateLoadMoreUI();
 }
 
