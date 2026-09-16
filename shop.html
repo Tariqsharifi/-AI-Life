@@ -2852,7 +2852,7 @@ function trimTopNow(){
     }
     const heightAfter = grid.scrollHeight;
     renderStart += removeCount;
-    window.scrollBy(0, -(heightBefore - heightAfter));
+    window.scrollBy({ top: -(heightBefore - heightAfter), left: 0, behavior: 'auto' });
   }
 }
 
@@ -2868,7 +2868,7 @@ function prependPrev(){
   const heightBefore = grid.scrollHeight;
   grid.insertAdjacentHTML('afterbegin', html);
   const heightAfter = grid.scrollHeight;
-  window.scrollBy(0, heightAfter - heightBefore);
+  window.scrollBy({ top: heightAfter - heightBefore, left: 0, behavior: 'auto' });
   renderStart = newStart;
 
   if((renderEnd - renderStart) > MAX_WINDOW){
