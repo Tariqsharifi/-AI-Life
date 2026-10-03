@@ -3527,6 +3527,8 @@ async function applyPriceChange(direction){
   const items = data.filter(p => !p.pending_approval);
   const backup = {};
   items.forEach(p => { backup[p.id] = { price: p.price, variants: p.variants || [] }; });
+  const { data: oldB } = await sb.from('settings').select('value').eq('key', 'price_backup').maybeSingle();
+  if(oldB && oldB.value) await sb.from('settings').upsert({ key: 'price_backup_prev', value: oldB.value });
   const { error: bErr } = await sb.from('settings').upsert({ key: 'price_backup', value: JSON.stringify(backup) });
   if(bErr){ showMsg('priceChangeMsg', 'بکاپ ساخته نشد، کاری انجام نشد: ' + bErr.message, false); return; }
 
