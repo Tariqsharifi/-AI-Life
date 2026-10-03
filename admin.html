@@ -3511,6 +3511,54 @@ async function createVendor(){
   }
 }
 
+async function applyPriceChange(direction){
+  const pct = parseFloat(document.getElementById('priceChangePercent').value);
+  if(isNaN(pct) || pct <= 0 || pct > 100){
+    showMsg('priceChangeMsg', 'یه درصد درست وارد کن', false);
+    return;
+  }
+  const factor = 1 + (direction === 'up' ? 1 : -1) * pct / 100;
+  if(!confirm(`قیمت همه محصولات ${pct}٪ ${direction==='up' ? 'بالا' : 'پایین'} بره؟`)) return;
+
+  showMsg('priceChangeMsg', 'در حال تغییر قیمت‌ها...', true);
+  const { data, error } = await sb.from('products').select('id, price, variants, pending_approval');
+  if(error){ showMsg('priceChangeMsg', 'خطا: ' + error.message, false); return; }
+
+  const items = data.filter(p => !p.pending_approval);
+  const backup = {};
+  items.forEach(p => { backup[p.id] = { price: p.price, variants: p.variants || [] }; });
+  const { error: bErr } = await sb.from('settings').upsert({ key: 'price_backup', value: JSON.stringify(backup) });
+  if(bErr){ showMsg('priceChangeMsg', 'بکاپ ساخته نشد، کاری انجام نشد: ' + bErr.message, false); return; }
+
+  const round = n => Math.round(n * factor / 100) * 100;
+  let done = 0, failed = 0;
+  for(let i = 0; i < items.length; i += 10){
+    await Promise.all(items.slice(i, i + 10).map(async p => {
+      const variants = (p.variants || []).map(v => v.price ? { ...v, price: round(v.price) } : v);
+      const { error } = await sb.from('products').update({ price: round(p.price), variants }).eq('id', p.id);
+      if(error) failed++; else done++;
+    }));
+  }
+  showMsg('priceChangeMsg', `✅ قیمت ${done.toLocaleString('fa-IR')} محصول تغییر کرد` + (failed ? ` | ❌ ${failed} خطا` : ''), failed === 0);
+  loadProducts();
+}
+
+async function undoPriceChange(){
+  if(!confirm('قیمت‌ها به قبل از آخرین تغییر برگردن؟')) return;
+  const { data, error } = await sb.from('settings').select('value').eq('key', 'price_backup').maybeSingle();
+  if(error || !data){ showMsg('priceChangeMsg', 'بکاپی پیدا نشد', false); return; }
+  const backup = JSON.parse(data.value);
+  const ids = Object.keys(backup);
+  let done = 0;
+  for(let i = 0; i < ids.length; i += 10){
+    await Promise.all(ids.slice(i, i + 10).map(async id => {
+      const { error } = await sb.from('products').update({ price: backup[id].price, variants: backup[id].variants }).eq('id', id);
+      if(!error) done++;
+    }));
+  }
+  showMsg('priceChangeMsg', `✅ قیمت ${done.toLocaleString('fa-IR')} محصول برگشت`, true);
+  loadProducts();
+}
 
   async function createAdmin(){
     const email = document.getElementById('newAdminEmail').value.trim();
