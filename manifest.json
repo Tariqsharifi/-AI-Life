@@ -2,7 +2,7 @@
   "name": "طلوع کالا",
   "short_name": "طلوع کالا",
   "description": "طلوع کالا - فروشگاه آنلاین لوازم پلاستیکی خانگی و کالاهای متنوع",
-  "start_url": ".",
+  "start_url": "shop.html",
   "display": "standalone",
   "background_color": "#FBF9FF",
   "theme_color": "#6D28D9",
